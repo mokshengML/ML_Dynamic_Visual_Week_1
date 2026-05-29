@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Review · MokshPath</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);--navy:#2B2D42;--navy-dark:#1A1B2E;--bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;--text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;--border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--purple:#7C5AC2;--shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);--radius:14px;--radius-sm:8px}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:100;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm)}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo-icon{width:42px;height:42px}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.15}
+.nav-logo-name{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--navy)}
+.nav-logo-name span{color:var(--orange)}
+.nav-logo-tag{font-size:.62rem;color:var(--text-muted);font-weight:500;letter-spacing:.02em}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+/* Top-right floating brand mark (hero.svg) */
+.brand-mark{position:fixed;top:80px;right:24px;width:72px;height:auto;z-index:50;opacity:.92;filter:drop-shadow(0 6px 18px rgba(232,122,46,0.25));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* Hero */
+.hero{padding:4rem 2rem 2.5rem;text-align:center;position:relative}
+.hero-inner{max-width:920px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem 1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.3)}}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.13;color:var(--navy);margin-bottom:1rem}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.02rem;color:var(--text-secondary);line-height:1.7;max-width:600px;margin:0 auto 1.6rem}
+.hero-toc{display:inline-flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1rem}
+.hero-toc a{padding:.4rem .9rem;border-radius:50px;background:var(--bg-card);border:1px solid var(--border);font-size:.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .2s}
+.hero-toc a:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+
+/* Section */
+.section{padding:3rem 2rem;border-top:1px solid var(--border)}
+.section:nth-of-type(odd){background:var(--bg-light)}
+.container{max-width:1080px;margin:0 auto}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:var(--orange);color:#fff;font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:.8rem;box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.sec-num.n2{background:#E8A040}
+.sec-num.n3{background:#66BB6A}
+.sec-num.n4{background:var(--green)}
+.sec-num.n5{background:var(--blue)}
+.sec-num.n6{background:var(--purple)}
+.sec-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);margin-bottom:.4rem;line-height:1.2}
+.sec-intro{font-size:.95rem;color:var(--text-secondary);max-width:680px;line-height:1.7;margin-bottom:1.6rem}
+
+/* Analogy card */
+.analogy{background:linear-gradient(135deg,var(--orange-glow),rgba(232,122,46,0.04));border:1px solid rgba(232,122,46,0.2);border-left:4px solid var(--orange);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;gap:.85rem;align-items:flex-start}
+.analogy-icon{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.analogy-body{flex:1}
+.analogy-label{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.analogy-text{font-size:.9rem;color:var(--text-primary);line-height:1.55}
+
+/* Stage (the animation canvas) */
+.stage{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stage-svg{width:100%;height:auto;display:block;max-height:380px}
+
+/* Controls */
+.controls{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px dashed var(--border);flex-wrap:wrap}
+.control-info{flex:1;min-width:200px}
+.control-step{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem}
+.control-caption{font-size:.92rem;color:var(--text-primary);font-weight:500;line-height:1.45}
+.control-btns{display:flex;gap:.5rem;flex-shrink:0}
+.ctrl{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.ctrl-prev{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-prev:hover:not(:disabled){background:var(--bg-light);color:var(--navy)}
+.ctrl-prev:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-next{background:var(--orange);color:#fff}
+.ctrl-next:hover:not(:disabled){background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.ctrl-next:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-replay{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-replay:hover{background:var(--bg-light);color:var(--navy)}
+.ctrl svg{width:14px;height:14px}
+
+/* Code block */
+.code-block{background:var(--navy-dark);color:#e8e8e8;border-radius:var(--radius-sm);padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.6;margin-top:1.2rem;overflow-x:auto}
+.code-block .kw{color:#F5943E}
+.code-block .str{color:#A5D6A7}
+.code-block .com{color:#8B8E9E;font-style:italic}
+.code-block .fn{color:#90CAF9}
+.code-block .num{color:#FFCC80}
+
+/* Step progress dots */
+.step-dots{display:flex;gap:.4rem;margin-top:.8rem;justify-content:center}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s}
+.step-dot.active{background:var(--orange);transform:scale(1.3)}
+.step-dot.done{background:var(--green)}
+
+/* SVG element classes */
+.cell{transition:all .4s cubic-bezier(.4,0,.2,1)}
+.cell-bg{fill:#fff;stroke:#E5DDD4;stroke-width:1.5}
+.cell-bg.highlight{fill:#FFE9D6;stroke:var(--orange);stroke-width:2}
+.cell-bg.match{fill:var(--green-light);stroke:var(--green);stroke-width:2}
+.cell-bg.dim{opacity:.3}
+.cell-bg.grp-a{fill:#FFE3CC;stroke:var(--orange)}
+.cell-bg.grp-b{fill:#D6EAFB;stroke:var(--blue)}
+.cell-bg.grp-c{fill:#E0F2D9;stroke:var(--green)}
+.cell-text{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;fill:var(--navy);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.col-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;fill:var(--text-muted);text-anchor:middle;text-transform:uppercase;letter-spacing:.05em}
+.row-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;fill:var(--text-muted);text-anchor:end;dominant-baseline:central}
+
+/* Footer */
+footer{background:var(--bg-card);border-top:1px solid var(--border);padding:1.6rem 2rem;text-align:center;margin-top:2rem}
+.footer-copy{font-size:.78rem;color:var(--text-muted)}
+.footer-nav{display:flex;justify-content:center;gap:1rem;margin-top:.6rem;flex-wrap:wrap}
+.footer-nav a{font-size:.78rem;color:var(--orange);text-decoration:none;font-weight:600}
+
+@media(max-width:720px){
+  .brand-mark{width:48px;top:72px;right:12px}
+  .section{padding:2.2rem 1.2rem}
+  .hero{padding:3rem 1.2rem 2rem}
+  .nav{padding:0 1rem}
+  .nav-logo-tag{display:none}
+  .controls{flex-direction:column;align-items:stretch}
+  .control-btns{justify-content:space-between}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-icon" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="14" r="6" fill="#E87A2E"/><path d="M21 20c-6 0-10 3-10 7 0 2 1 3 2 4l2-3c1-1.5 2.5-2 3-2h6c.5 0 2 .5 3 2l2 3c1-1 2-2 2-4 0-4-4-7-10-7z" fill="#E87A2E"/><path d="M11 31c0 0 2 4 10 4s10-4 10-4" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="21" cy="38" rx="8" ry="2" fill="#E87A2E" opacity=".15"/><path d="M8 27l-3 2m29-2l3 2" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><circle cx="21" cy="14" r="3" fill="#FFF" opacity=".3"/></svg>
+    <div class="nav-logo-text"><span class="nav-logo-name">Moksh<span>Path</span></span><span class="nav-logo-tag">Guided Path to True Learning</span></div>
+  </a>
+  <div class="nav-right">
+    <span class="nav-pill"><span style="width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block"></span>Lesson 1 of 4</span>
+  </div>
+</nav>
+
+<!-- Brand mark in top right (hero.svg) -->
+<img src="hero.svg" alt="MokshPath" class="brand-mark">
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Python Review</div>
+    <h1>Python for Data — <em>Visualised</em></h1>
+    <p class="hero-sub">No prior coding background? No problem. Each operation below is a small animated story. Press <strong>Next</strong> to step through; watch what happens to the data; then read the caption that tells you exactly why it matters.</p>
+    <nav class="hero-toc">
+      <a href="#numpy">NumPy arrays</a>
+      <a href="#pandas">DataFrames</a>
+      <a href="#filter">Filtering</a>
+      <a href="#groupby">GroupBy</a>
+      <a href="#merge">Merging</a>
+      <a href="#pivot">Pivot tables</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────── 1. NUMPY ARRAYS ─────────── -->
+<section class="section" id="numpy">
+  <div class="container">
+    <div class="sec-num">1</div>
+    <h2 class="sec-title">NumPy Arrays — the super-fast row of boxes</h2>
+    <p class="sec-intro">A NumPy array is just a row (or grid) of numbers stored in identical boxes. Because every box is the same size, the computer can blast through millions of them at once — far faster than a regular Python list.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🥚</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Think of an <strong>egg carton</strong>. Every slot is identical, every egg sits in its place, and you can grab egg #5 instantly — you don't have to count from the front. That's a 1-D NumPy array.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="np-svg" viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- 1D array boxes -->
+        <g id="np-1d">
+          <text class="col-label" x="360" y="36">A 1-D ARRAY OF 6 NUMBERS</text>
+          <g id="np-cells"></g>
+          <g id="np-indices"></g>
+        </g>
+        <!-- Multiply by 2 arrow + result -->
+        <g id="np-op" opacity="0">
+          <text class="col-label" x="360" y="180" style="fill:var(--orange)">arr × 2  →  all boxes multiply at once</text>
+          <g id="np-cells-2"></g>
+          <g id="np-indices-2"></g>
+        </g>
+        <!-- Vectorised badge -->
+        <g id="np-badge" opacity="0">
+          <rect x="240" y="270" width="240" height="34" rx="17" fill="var(--green-light)" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="360" y="291" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:700;fill:var(--green)">⚡ vectorised — one instruction, many values</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="np-step">Step 1 of 4</div>
+          <div class="control-caption" id="np-cap">An array is a row of identically-sized boxes. Each holds one number.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="np-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetNp()">↺</button>
+          <button class="ctrl ctrl-next" id="np-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="np-dots"></div>
+    </div>
+
+    <div class="code-block">
+<span class="com"># In code, this whole story is just two lines:</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+arr = np.<span class="fn">array</span>([<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>, <span class="num">60</span>])
+arr * <span class="num">2</span>   <span class="com"># → array([20, 40, 60, 80, 100, 120])</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 2. PANDAS DATAFRAMES ─────────── -->
+<section class="section" id="pandas">
+  <div class="container">
+    <div class="sec-num n2">2</div>
+    <h2 class="sec-title">Pandas DataFrame — the smart spreadsheet</h2>
+    <p class="sec-intro">A DataFrame is a labelled table: rows are records, columns are properties. It's a spreadsheet with super-powers — every column knows its own name and type.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">📒</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Imagine a <strong>school attendance register</strong>. Down the side are students (rows), across the top are columns like <em>Name</em>, <em>Age</em>, <em>City</em>, <em>Marks</em>. That's a DataFrame.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="df-svg" viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg">
+        <g id="df-grid"></g>
+        <g id="df-pointer" opacity="0">
+          <polygon points="0,-8 12,0 0,8" fill="var(--orange)"/>
+          <text x="20" y="0" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--orange)" dominant-baseline="central" id="df-pointer-text">Index</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="df-step">Step 1 of 5</div>
+          <div class="control-caption" id="df-cap">We start with an empty table. Watch the structure build piece by piece.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="df-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetDf()">↺</button>
+          <button class="ctrl ctrl-next" id="df-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="df-dots"></div>
+    </div>
+
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="str">"name"</span>:   [<span class="str">"Asha"</span>, <span class="str">"Ben"</span>, <span class="str">"Cara"</span>, <span class="str">"Dev"</span>],
+    <span class="str">"age"</span>:    [<span class="num">23</span>, <span class="num">31</span>, <span class="num">28</span>, <span class="num">45</span>],
+    <span class="str">"city"</span>:   [<span class="str">"Pune"</span>, <span class="str">"Pune"</span>, <span class="str">"Delhi"</span>, <span class="str">"Delhi"</span>],
+    <span class="str">"marks"</span>:  [<span class="num">82</span>, <span class="num">76</span>, <span class="num">91</span>, <span class="num">65</span>]
+})
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 3. FILTERING ─────────── -->
+<section class="section" id="filter">
+  <div class="container">
+    <div class="sec-num n3">3</div>
+    <h2 class="sec-title">Filtering — keep only the rows you want</h2>
+    <p class="sec-intro">A filter asks every row a yes/no question. Rows that answer "yes" stay, rows that answer "no" are dropped. The original data is untouched — you get a smaller copy.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🪜</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Think of a <strong>sieve over flour</strong>. The big lumps stay on top, the fine flour falls through. Filtering says: "let through every row where <em>marks &gt; 75</em>."</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="fl-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+        <g id="fl-question" opacity="0">
+          <rect x="180" y="14" width="360" height="34" rx="17" fill="var(--orange-glow)" stroke="var(--orange)" stroke-width="1.5"/>
+          <text x="360" y="35" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:13px;font-weight:600;fill:var(--orange)">Question:  marks &gt; 75 ?</text>
+        </g>
+        <g id="fl-grid"></g>
+        <g id="fl-arrow" opacity="0">
+          <text x="360" y="225" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--text-muted)">↓ KEEP THE "YES" ROWS ↓</text>
+        </g>
+        <g id="fl-result"></g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="fl-step">Step 1 of 5</div>
+          <div class="control-caption" id="fl-cap">Same table as before. We will ask each row: is your <em>marks</em> bigger than 75?</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="fl-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetFl()">↺</button>
+          <button class="ctrl ctrl-next" id="fl-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="fl-dots"></div>
+    </div>
+
+    <div class="code-block">
+<span class="com"># Boolean mask: True / False for every row</span>
+mask = df[<span class="str">"marks"</span>] &gt; <span class="num">75</span>
+top_scorers = df[mask]            <span class="com"># keep only the True rows</span>
+<span class="com"># short form: df[df["marks"] &gt; 75]</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 4. GROUPBY ─────────── -->
+<section class="section" id="groupby">
+  <div class="container">
+    <div class="sec-num n4">4</div>
+    <h2 class="sec-title">GroupBy — split, summarise, combine</h2>
+    <p class="sec-intro">GroupBy says: "bucket the rows by some column, then run one calculation per bucket." It's how you turn a big table into a tidy summary.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🧺</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Picture <strong>laundry day</strong>. You sort socks into piles — whites, colours, darks — and then count each pile. <em>Group by colour, then count.</em> That's exactly groupby.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="gb-svg" viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+        <g id="gb-source"></g>
+        <g id="gb-buckets" opacity="0">
+          <text class="col-label" x="180" y="180">PUNE</text>
+          <text class="col-label" x="540" y="180">DELHI</text>
+          <rect x="60" y="190" width="240" height="100" rx="10" fill="var(--orange-glow)" stroke="var(--orange)" stroke-width="2" stroke-dasharray="6 4"/>
+          <rect x="420" y="190" width="240" height="100" rx="10" fill="rgba(66,133,244,0.1)" stroke="var(--blue)" stroke-width="2" stroke-dasharray="6 4"/>
+        </g>
+        <g id="gb-moved"></g>
+        <g id="gb-summary" opacity="0">
+          <rect x="120" y="310" width="220" height="46" rx="10" fill="#fff" stroke="var(--orange)" stroke-width="2"/>
+          <text x="230" y="328" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--text-muted)">PUNE → mean marks</text>
+          <text x="230" y="348" text-anchor="middle" style="font-family:'DM Serif Display';font-size:18px;fill:var(--orange)">79.0</text>
+          <rect x="380" y="310" width="220" height="46" rx="10" fill="#fff" stroke="var(--blue)" stroke-width="2"/>
+          <text x="490" y="328" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--text-muted)">DELHI → mean marks</text>
+          <text x="490" y="348" text-anchor="middle" style="font-family:'DM Serif Display';font-size:18px;fill:var(--blue)">78.0</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="gb-step">Step 1 of 4</div>
+          <div class="control-caption" id="gb-cap">The same 4 students. We want average marks per city. Watch them split and re-form.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="gb-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetGb()">↺</button>
+          <button class="ctrl ctrl-next" id="gb-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="gb-dots"></div>
+    </div>
+
+    <div class="code-block">
+df.<span class="fn">groupby</span>(<span class="str">"city"</span>)[<span class="str">"marks"</span>].<span class="fn">mean</span>()
+<span class="com"># city
+# Delhi    78.0
+# Pune     79.0</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 5. MERGING ─────────── -->
+<section class="section" id="merge">
+  <div class="container">
+    <div class="sec-num n5">5</div>
+    <h2 class="sec-title">Merging — joining two tables by a common key</h2>
+    <p class="sec-intro">When two tables share a column (an ID, a name, a date), merging zips them together row-by-row. It's how isolated bits of information become a complete picture.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🧩</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">A <strong>movie ticket and a popcorn coupon</strong> in your wallet. Both have your booking ID. Bring them together by that ID and now you have the full snack-and-show combo.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="mg-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+        <g id="mg-left"></g>
+        <g id="mg-right"></g>
+        <g id="mg-key-arrows" opacity="0"></g>
+        <g id="mg-result"></g>
+        <g id="mg-labels">
+          <text class="col-label" x="120" y="20">STUDENTS</text>
+          <text class="col-label" x="540" y="20">SCORES</text>
+        </g>
+        <g id="mg-result-label" opacity="0">
+          <text class="col-label" x="360" y="220" style="fill:var(--green)">↓ MERGED ON  id  ↓</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="mg-step">Step 1 of 4</div>
+          <div class="control-caption" id="mg-cap">Two separate tables — one with names, one with scores. They share a column: <em>id</em>.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="mg-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetMg()">↺</button>
+          <button class="ctrl ctrl-next" id="mg-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="mg-dots"></div>
+    </div>
+
+    <div class="code-block">
+pd.<span class="fn">merge</span>(students, scores, on=<span class="str">"id"</span>)
+<span class="com"># pairs each row by matching id — full picture in one table</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 6. PIVOT TABLES ─────────── -->
+<section class="section" id="pivot">
+  <div class="container">
+    <div class="sec-num n6">6</div>
+    <h2 class="sec-title">Pivot Tables — reshape rows into a grid</h2>
+    <p class="sec-intro">A pivot turns a long list into a cross-tab: one variable becomes the rows, another becomes the columns, and a number fills each cell. It's a snapshot of relationships at a glance.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">📅</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">A <strong>weekly class timetable</strong>: days across the top, periods down the side, the subject in each cell. From a messy diary, you get an instant grid you can read in seconds.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="pv-svg" viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+        <g id="pv-long"></g>
+        <g id="pv-arrows" opacity="0"></g>
+        <g id="pv-pivot"></g>
+        <g id="pv-labels">
+          <text class="col-label" x="170" y="18">LONG (one row per sale)</text>
+        </g>
+        <g id="pv-pivot-label" opacity="0">
+          <text class="col-label" x="540" y="18" style="fill:var(--green)">PIVOTED  (city × product, sum of sales)</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="pv-step">Step 1 of 4</div>
+          <div class="control-caption" id="pv-cap">A sales log — every transaction is one row. Hard to spot patterns when it's this long.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="pv-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetPv()">↺</button>
+          <button class="ctrl ctrl-next" id="pv-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="pv-dots"></div>
+    </div>
+
+    <div class="code-block">
+df.<span class="fn">pivot_table</span>(
+    index=<span class="str">"city"</span>,
+    columns=<span class="str">"product"</span>,
+    values=<span class="str">"sales"</span>,
+    aggfunc=<span class="str">"sum"</span>
+)
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">© 2026 MokshPath · Guided Path to True Learning</div>
+  <div class="footer-nav">
+    <a href="02-eda.html">Next lesson: Exploratory Data Analysis →</a>
+  </div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   Generic stepper helper
+   ════════════════════════════════════════════════════════════ */
+function makeStepper(prefix, totalSteps, stepFn) {
+  const prev = document.getElementById(prefix + '-prev');
+  const next = document.getElementById(prefix + '-next');
+  const stepLabel = document.getElementById(prefix + '-step');
+  const cap = document.getElementById(prefix + '-cap');
+  const dotsEl = document.getElementById(prefix + '-dots');
+  let current = 0;
+
+  // render dots
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < totalSteps; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot';
+    dotsEl.appendChild(d);
+  }
+
+  function render() {
+    stepLabel.textContent = `Step ${current + 1} of ${totalSteps}`;
+    prev.disabled = current === 0;
+    next.disabled = current === totalSteps - 1;
+    next.textContent = current === totalSteps - 1 ? 'Done ✓' : 'Next ▶';
+    Array.from(dotsEl.children).forEach((d, i) => {
+      d.classList.remove('active', 'done');
+      if (i < current) d.classList.add('done');
+      else if (i === current) d.classList.add('active');
+    });
+    stepFn(current, cap);
+  }
+
+  prev.addEventListener('click', () => { if (current > 0) { current--; render(); } });
+  next.addEventListener('click', () => { if (current < totalSteps - 1) { current++; render(); } });
+
+  render();
+  return { reset: () => { current = 0; render(); } };
+}
+
+/* ════════════════════════════════════════════════════════════
+   1. NUMPY ARRAYS animation
+   ════════════════════════════════════════════════════════════ */
+const npVals = [10, 20, 30, 40, 50, 60];
+function buildNp() {
+  const cellsG = document.getElementById('np-cells');
+  const idxG = document.getElementById('np-indices');
+  const cells2 = document.getElementById('np-cells-2');
+  const idx2 = document.getElementById('np-indices-2');
+  cellsG.innerHTML = idxG.innerHTML = cells2.innerHTML = idx2.innerHTML = '';
+  const startX = 100, w = 80, y = 60;
+  npVals.forEach((v, i) => {
+    cellsG.insertAdjacentHTML('beforeend',
+      `<rect class="cell-bg np-cell" data-i="${i}" x="${startX + i*w + 4}" y="${y}" width="${w - 8}" height="64" rx="8"/>
+       <text class="cell-text" x="${startX + i*w + w/2}" y="${y + 32}">${v}</text>`);
+    idxG.insertAdjacentHTML('beforeend',
+      `<text class="col-label" x="${startX + i*w + w/2}" y="${y + 86}" style="fill:var(--text-muted)">[${i}]</text>`);
+    // result row
+    cells2.insertAdjacentHTML('beforeend',
+      `<rect class="cell-bg np-cell-2" data-i="${i}" x="${startX + i*w + 4}" y="200" width="${w - 8}" height="50" rx="8" fill="#FFE9D6" stroke="#E87A2E" stroke-width="1.5" opacity="0"/>
+       <text class="cell-text np-cell-2t" data-i="${i}" x="${startX + i*w + w/2}" y="225" opacity="0">${v*2}</text>`);
+  });
+}
+buildNp();
+makeStepper('np', 4, (step, cap) => {
+  const op = document.getElementById('np-op');
+  const badge = document.getElementById('np-badge');
+  const allCells = document.querySelectorAll('.np-cell');
+  const allCells2 = document.querySelectorAll('.np-cell-2');
+  const allTexts2 = document.querySelectorAll('.np-cell-2t');
+
+  // reset
+  allCells.forEach(c => { c.classList.remove('highlight'); c.style.opacity = 1; });
+  op.style.opacity = 0;
+  badge.style.opacity = 0;
+  allCells2.forEach(c => c.style.opacity = 0);
+  allTexts2.forEach(t => t.style.opacity = 0);
+
+  if (step === 0) {
+    cap.innerHTML = 'An array is a row of identical boxes. Each holds one number. Indices count from 0.';
+  } else if (step === 1) {
+    cap.innerHTML = 'You can grab any single value by its index — <code style="background:var(--bg-light);padding:1px 6px;border-radius:4px;font-family:JetBrains Mono">arr[2]</code> gives 30, instantly.';
+    document.querySelector('.np-cell[data-i="2"]').classList.add('highlight');
+  } else if (step === 2) {
+    cap.innerHTML = 'Now the magic: write <code style="background:var(--bg-light);padding:1px 6px;border-radius:4px;font-family:JetBrains Mono">arr * 2</code> and every box doubles — all at the same time.';
+    op.style.opacity = 1;
+    allCells2.forEach((c, i) => setTimeout(() => { c.style.opacity = 1; allTexts2[i].style.opacity = 1; }, i * 120));
+  } else if (step === 3) {
+    cap.innerHTML = '<strong>Why this matters:</strong> NumPy runs the operation on all values together — 100× faster than a regular Python loop on big data.';
+    op.style.opacity = 1;
+    allCells2.forEach(c => c.style.opacity = 1);
+    allTexts2.forEach(t => t.style.opacity = 1);
+    badge.style.opacity = 1;
+  }
+});
+function resetNp() { document.getElementById('np-prev').click(); document.getElementById('np-prev').click(); document.getElementById('np-prev').click(); document.getElementById('np-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   2. PANDAS DATAFRAME animation
+   ════════════════════════════════════════════════════════════ */
+const dfData = [
+  ['Asha', 23, 'Pune', 82],
+  ['Ben', 31, 'Pune', 76],
+  ['Cara', 28, 'Delhi', 91],
+  ['Dev', 45, 'Delhi', 65]
+];
+const dfCols = ['name', 'age', 'city', 'marks'];
+function buildDf() {
+  const g = document.getElementById('df-grid');
+  g.innerHTML = '';
+  const startX = 140, startY = 60, colW = 110, rowH = 42;
+  // index column
+  g.insertAdjacentHTML('beforeend', `<text class="col-label df-idx-h" x="100" y="${startY + 20}" opacity="0">idx</text>`);
+  // column headers
+  dfCols.forEach((c, i) => {
+    g.insertAdjacentHTML('beforeend',
+      `<rect class="df-colh" data-i="${i}" x="${startX + i*colW + 4}" y="${startY}" width="${colW - 8}" height="34" rx="6" fill="${i % 2 === 0 ? '#FFE9D6' : '#FFF5E6'}" stroke="#E87A2E" stroke-width="1.5" opacity="0"/>
+       <text class="col-label df-colh-t" data-i="${i}" x="${startX + i*colW + colW/2}" y="${startY + 22}" style="fill:var(--orange);font-size:12px" opacity="0">${c}</text>`);
+  });
+  // rows
+  dfData.forEach((row, r) => {
+    const y = startY + 42 + r*rowH;
+    g.insertAdjacentHTML('beforeend',
+      `<text class="row-label df-idx" data-r="${r}" x="118" y="${y + rowH/2}" opacity="0">${r}</text>`);
+    row.forEach((v, c) => {
+      g.insertAdjacentHTML('beforeend',
+        `<rect class="cell-bg df-cell" data-r="${r}" data-c="${c}" x="${startX + c*colW + 4}" y="${y + 4}" width="${colW - 8}" height="${rowH - 8}" rx="6" opacity="0"/>
+         <text class="cell-text df-cell-t" data-r="${r}" data-c="${c}" x="${startX + c*colW + colW/2}" y="${y + rowH/2}" opacity="0">${v}</text>`);
+    });
+  });
+}
+buildDf();
+makeStepper('df', 5, (step, cap) => {
+  // reset
+  document.querySelectorAll('.df-cell, .df-cell-t, .df-colh, .df-colh-t, .df-idx, .df-idx-h').forEach(e => e.style.opacity = 0);
+  document.querySelectorAll('.df-cell').forEach(e => e.classList.remove('highlight'));
+  document.getElementById('df-pointer').style.opacity = 0;
+
+  if (step === 0) {
+    cap.innerHTML = 'We start with an empty table. Watch the structure build piece by piece.';
+  } else if (step === 1) {
+    cap.innerHTML = 'First, <strong>column names</strong> appear at the top. Each names one property: name, age, city, marks.';
+    document.querySelectorAll('.df-colh, .df-colh-t').forEach((e, i) => setTimeout(() => e.style.opacity = 1, (i % 4) * 100));
+  } else if (step === 2) {
+    cap.innerHTML = 'Now the <strong>rows</strong> fill in. Each row is one student — one complete record.';
+    document.querySelectorAll('.df-colh, .df-colh-t').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.df-cell, .df-cell-t').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 30));
+  } else if (step === 3) {
+    cap.innerHTML = 'Pandas also adds an <strong>index</strong> on the left — like row numbers in a spreadsheet. You can look up a row by its index.';
+    document.querySelectorAll('.df-colh, .df-colh-t').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.df-cell, .df-cell-t').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.df-idx, .df-idx-h').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 80));
+    const ptr = document.getElementById('df-pointer');
+    ptr.setAttribute('transform', 'translate(70, 102)');
+    ptr.style.opacity = 1;
+    document.getElementById('df-pointer-text').textContent = 'Index';
+  } else if (step === 4) {
+    cap.innerHTML = 'You can pull out one full column in one line — <code style="background:var(--bg-light);padding:1px 6px;border-radius:4px;font-family:JetBrains Mono">df["marks"]</code> — and do maths on it.';
+    document.querySelectorAll('.df-colh, .df-colh-t').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.df-cell, .df-cell-t').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.df-idx, .df-idx-h').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.df-cell[data-c="3"]').forEach(e => e.classList.add('highlight'));
+    const ptr = document.getElementById('df-pointer');
+    ptr.setAttribute('transform', 'translate(580, 80) rotate(90)');
+    ptr.style.opacity = 1;
+    document.getElementById('df-pointer-text').textContent = 'Column';
+  }
+});
+function resetDf() { for (let i = 0; i < 5; i++) document.getElementById('df-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   3. FILTERING animation
+   ════════════════════════════════════════════════════════════ */
+function buildFl() {
+  const g = document.getElementById('fl-grid');
+  const result = document.getElementById('fl-result');
+  g.innerHTML = result.innerHTML = '';
+  const startX = 140, startY = 60, colW = 110, rowH = 38;
+  // headers
+  dfCols.forEach((c, i) => {
+    g.insertAdjacentHTML('beforeend',
+      `<text class="col-label" x="${startX + i*colW + colW/2}" y="${startY + 12}" style="fill:var(--text-muted)">${c}</text>`);
+  });
+  // rows
+  dfData.forEach((row, r) => {
+    const y = startY + 24 + r*rowH;
+    row.forEach((v, c) => {
+      g.insertAdjacentHTML('beforeend',
+        `<rect class="cell-bg fl-cell" data-r="${r}" data-c="${c}" x="${startX + c*colW + 4}" y="${y + 4}" width="${colW - 8}" height="${rowH - 8}" rx="6"/>
+         <text class="cell-text fl-cell-t" data-r="${r}" data-c="${c}" x="${startX + c*colW + colW/2}" y="${y + rowH/2}">${v}</text>`);
+    });
+    // verdict tag
+    const passes = row[3] > 75;
+    g.insertAdjacentHTML('beforeend',
+      `<g class="fl-verdict" data-r="${r}" opacity="0" transform="translate(${startX + 4*colW + 20}, ${y + rowH/2})">
+        <rect x="-2" y="-13" width="50" height="26" rx="13" fill="${passes ? 'var(--green-light)' : '#FFE0E0'}" stroke="${passes ? 'var(--green)' : '#E74C3C'}" stroke-width="1.5"/>
+        <text x="22" y="0" text-anchor="middle" dominant-baseline="central" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:${passes ? 'var(--green)' : '#E74C3C'}">${passes ? '✓ YES' : '✗ NO'}</text>
+       </g>`);
+  });
+  // result rows (drawn but hidden)
+  const passRows = dfData.map((row, r) => ({row, r})).filter(o => o.row[3] > 75);
+  passRows.forEach((o, ri) => {
+    const y = 250 + ri * rowH;
+    o.row.forEach((v, c) => {
+      result.insertAdjacentHTML('beforeend',
+        `<rect class="cell-bg fl-res match" data-r="${o.r}" data-c="${c}" x="${startX + c*colW + 4}" y="${y + 4}" width="${colW - 8}" height="${rowH - 8}" rx="6" opacity="0"/>
+         <text class="cell-text fl-res-t" data-r="${o.r}" data-c="${c}" x="${startX + c*colW + colW/2}" y="${y + rowH/2}" opacity="0">${v}</text>`);
+    });
+  });
+}
+buildFl();
+makeStepper('fl', 5, (step, cap) => {
+  document.querySelectorAll('.fl-verdict').forEach(e => e.style.opacity = 0);
+  document.querySelectorAll('.fl-cell').forEach(e => { e.classList.remove('dim', 'match'); });
+  document.querySelectorAll('.fl-res, .fl-res-t').forEach(e => e.style.opacity = 0);
+  document.getElementById('fl-question').style.opacity = 0;
+  document.getElementById('fl-arrow').style.opacity = 0;
+
+  if (step === 0) {
+    cap.innerHTML = 'Same table as before. We will ask each row: is your <em>marks</em> bigger than 75?';
+  } else if (step === 1) {
+    cap.innerHTML = 'The <strong>condition</strong> sits at the top. Pandas will apply it to every row, one by one.';
+    document.getElementById('fl-question').style.opacity = 1;
+  } else if (step === 2) {
+    cap.innerHTML = 'Each row gets a verdict: <strong style="color:var(--green)">YES</strong> if marks &gt; 75, <strong style="color:#E74C3C">NO</strong> otherwise. This list of True/Falses is the <em>boolean mask</em>.';
+    document.getElementById('fl-question').style.opacity = 1;
+    document.querySelectorAll('.fl-verdict').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 250));
+  } else if (step === 3) {
+    cap.innerHTML = 'NO rows are dropped, YES rows are kept. The original table is untouched — we get a new smaller copy.';
+    document.getElementById('fl-question').style.opacity = 1;
+    document.querySelectorAll('.fl-verdict').forEach(e => e.style.opacity = 1);
+    dfData.forEach((row, r) => {
+      if (row[3] <= 75) {
+        document.querySelectorAll(`.fl-cell[data-r="${r}"]`).forEach(e => e.classList.add('dim'));
+      }
+    });
+    document.getElementById('fl-arrow').style.opacity = 1;
+    document.querySelectorAll('.fl-res, .fl-res-t').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 60));
+  } else if (step === 4) {
+    cap.innerHTML = '<strong>Two rows remain</strong> — the top scorers, Asha and Cara. From 4 rows down to 2, in one line of code.';
+    document.getElementById('fl-question').style.opacity = 1;
+    document.querySelectorAll('.fl-verdict').forEach(e => e.style.opacity = 1);
+    dfData.forEach((row, r) => {
+      if (row[3] <= 75) {
+        document.querySelectorAll(`.fl-cell[data-r="${r}"]`).forEach(e => e.classList.add('dim'));
+      }
+    });
+    document.getElementById('fl-arrow').style.opacity = 1;
+    document.querySelectorAll('.fl-res, .fl-res-t').forEach(e => e.style.opacity = 1);
+  }
+});
+function resetFl() { for (let i = 0; i < 5; i++) document.getElementById('fl-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   4. GROUPBY animation
+   ════════════════════════════════════════════════════════════ */
+const gbData = [
+  { name: 'Asha', city: 'Pune', marks: 82, color: 'orange' },
+  { name: 'Ben', city: 'Pune', marks: 76, color: 'orange' },
+  { name: 'Cara', city: 'Delhi', marks: 91, color: 'blue' },
+  { name: 'Dev', city: 'Delhi', marks: 65, color: 'blue' }
+];
+function buildGb() {
+  const src = document.getElementById('gb-source');
+  const moved = document.getElementById('gb-moved');
+  src.innerHTML = moved.innerHTML = '';
+  const startX = 120, startY = 50, w = 120, h = 70, gap = 12;
+  gbData.forEach((s, i) => {
+    src.insertAdjacentHTML('beforeend',
+      `<g class="gb-card" data-i="${i}" transform="translate(${startX + i*(w + gap)}, ${startY})">
+        <rect width="${w}" height="${h}" rx="10" fill="#fff" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="${w/2}" y="22" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">${s.city}</text>
+        <text x="${w/2}" y="44" text-anchor="middle" style="font-family:'DM Serif Display';font-size:16px;fill:var(--navy)">${s.name}</text>
+        <text x="${w/2}" y="62" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:12px;font-weight:600;fill:${s.color === 'orange' ? 'var(--orange)' : 'var(--blue)'}">marks: ${s.marks}</text>
+       </g>`);
+  });
+}
+buildGb();
+makeStepper('gb', 4, (step, cap) => {
+  const buckets = document.getElementById('gb-buckets');
+  const summary = document.getElementById('gb-summary');
+  buckets.style.opacity = 0;
+  summary.style.opacity = 0;
+  // reset positions
+  const startX = 120, startY = 50, w = 120, gap = 12;
+  gbData.forEach((s, i) => {
+    const card = document.querySelector(`.gb-card[data-i="${i}"]`);
+    card.setAttribute('transform', `translate(${startX + i*(w + gap)}, ${startY})`);
+    card.style.transition = 'transform .8s cubic-bezier(.4,0,.2,1)';
+  });
+
+  if (step === 0) {
+    cap.innerHTML = 'The same 4 students. We want average marks per city. Watch them split and re-form.';
+  } else if (step === 1) {
+    cap.innerHTML = '<strong>Step 1 · Split</strong> — pandas looks at the city column and prepares one bucket per unique value.';
+    buckets.style.opacity = 1;
+  } else if (step === 2) {
+    cap.innerHTML = '<strong>Step 2 · Move</strong> — Pune rows fly into the orange bucket, Delhi rows fly into the blue bucket.';
+    buckets.style.opacity = 1;
+    const puneIdx = gbData.filter(s => s.city === 'Pune').map((_, k) => k);
+    const delhiIdx = gbData.filter(s => s.city === 'Delhi').map((_, k) => k);
+    let p = 0, d = 0;
+    gbData.forEach((s, i) => {
+      const card = document.querySelector(`.gb-card[data-i="${i}"]`);
+      setTimeout(() => {
+        if (s.city === 'Pune') {
+          card.setAttribute('transform', `translate(${70 + p*120}, 205)`);
+          p++;
+        } else {
+          card.setAttribute('transform', `translate(${430 + d*120}, 205)`);
+          d++;
+        }
+      }, i * 200);
+    });
+  } else if (step === 3) {
+    cap.innerHTML = '<strong>Step 3 · Summarise</strong> — apply <code style="background:var(--bg-light);padding:1px 6px;border-radius:4px;font-family:JetBrains Mono">.mean()</code> per bucket. Big table → 2 numbers.';
+    buckets.style.opacity = 1;
+    let p = 0, d = 0;
+    gbData.forEach((s, i) => {
+      const card = document.querySelector(`.gb-card[data-i="${i}"]`);
+      if (s.city === 'Pune') {
+        card.setAttribute('transform', `translate(${70 + p*120}, 205)`);
+        p++;
+      } else {
+        card.setAttribute('transform', `translate(${430 + d*120}, 205)`);
+        d++;
+      }
+    });
+    setTimeout(() => { summary.style.opacity = 1; }, 300);
+  }
+});
+function resetGb() { for (let i = 0; i < 4; i++) document.getElementById('gb-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   5. MERGE animation
+   ════════════════════════════════════════════════════════════ */
+const mgLeft = [['id', 'name'], ['101', 'Asha'], ['102', 'Ben'], ['103', 'Cara']];
+const mgRight = [['id', 'score'], ['101', '82'], ['102', '76'], ['103', '91']];
+function buildMg() {
+  const L = document.getElementById('mg-left');
+  const R = document.getElementById('mg-right');
+  const arrows = document.getElementById('mg-key-arrows');
+  const Res = document.getElementById('mg-result');
+  L.innerHTML = R.innerHTML = arrows.innerHTML = Res.innerHTML = '';
+  // left table
+  const lX = 40, w = 80, h = 34, gap = 4;
+  mgLeft.forEach((row, r) => {
+    row.forEach((v, c) => {
+      const isHeader = r === 0;
+      L.insertAdjacentHTML('beforeend',
+        `<rect class="mg-l-cell" data-r="${r}" data-c="${c}" x="${lX + c*(w + gap)}" y="${40 + r*(h + gap)}" width="${w}" height="${h}" rx="6" fill="${isHeader ? '#FFE9D6' : '#fff'}" stroke="${isHeader ? 'var(--orange)' : 'var(--border)'}" stroke-width="1.5"/>
+         <text class="cell-text" x="${lX + c*(w + gap) + w/2}" y="${40 + r*(h + gap) + h/2}" style="font-size:12px;fill:${isHeader ? 'var(--orange)' : 'var(--navy)'};font-weight:${isHeader ? '700' : '600'}">${v}</text>`);
+    });
+  });
+  // right table
+  const rX = 460;
+  mgRight.forEach((row, r) => {
+    row.forEach((v, c) => {
+      const isHeader = r === 0;
+      R.insertAdjacentHTML('beforeend',
+        `<rect class="mg-r-cell" data-r="${r}" data-c="${c}" x="${rX + c*(w + gap)}" y="${40 + r*(h + gap)}" width="${w}" height="${h}" rx="6" fill="${isHeader ? '#D6EAFB' : '#fff'}" stroke="${isHeader ? 'var(--blue)' : 'var(--border)'}" stroke-width="1.5"/>
+         <text class="cell-text" x="${rX + c*(w + gap) + w/2}" y="${40 + r*(h + gap) + h/2}" style="font-size:12px;fill:${isHeader ? 'var(--blue)' : 'var(--navy)'};font-weight:${isHeader ? '700' : '600'}">${v}</text>`);
+    });
+  });
+  // merge arrows
+  mgLeft.slice(1).forEach((_, i) => {
+    const r = i + 1;
+    const y = 40 + r*(h + gap) + h/2;
+    arrows.insertAdjacentHTML('beforeend',
+      `<path class="mg-arrow" data-i="${i}" d="M ${lX + 2*(w+gap) - 4} ${y} Q ${360} ${y - 25} ${rX + 4} ${y}" stroke="var(--orange)" stroke-width="2" stroke-dasharray="5 4" fill="none" opacity="0"/>`);
+  });
+  // result table merged headers: id, name, score
+  const merged = [['id', 'name', 'score'], ['101', 'Asha', '82'], ['102', 'Ben', '76'], ['103', 'Cara', '91']];
+  const resX = 200;
+  merged.forEach((row, r) => {
+    row.forEach((v, c) => {
+      const isHeader = r === 0;
+      Res.insertAdjacentHTML('beforeend',
+        `<rect class="mg-res" data-r="${r}" data-c="${c}" x="${resX + c*(w + gap)}" y="${250 + r*(h + gap)}" width="${w}" height="${h}" rx="6" fill="${isHeader ? 'var(--green-light)' : '#fff'}" stroke="var(--green)" stroke-width="1.5" opacity="0"/>
+         <text class="cell-text mg-res-t" data-r="${r}" data-c="${c}" x="${resX + c*(w + gap) + w/2}" y="${250 + r*(h + gap) + h/2}" style="font-size:12px;fill:${isHeader ? 'var(--green)' : 'var(--navy)'};font-weight:${isHeader ? '700' : '600'}" opacity="0">${v}</text>`);
+    });
+  });
+}
+buildMg();
+makeStepper('mg', 4, (step, cap) => {
+  document.querySelectorAll('.mg-arrow').forEach(e => e.style.opacity = 0);
+  document.querySelectorAll('.mg-res, .mg-res-t').forEach(e => e.style.opacity = 0);
+  document.querySelectorAll('.mg-l-cell, .mg-r-cell').forEach(e => e.classList.remove('highlight'));
+  document.getElementById('mg-result-label').style.opacity = 0;
+
+  if (step === 0) {
+    cap.innerHTML = 'Two separate tables — one with names, one with scores. They share a column: <em>id</em>.';
+  } else if (step === 1) {
+    cap.innerHTML = 'The <strong>shared key</strong> is <code style="background:var(--bg-light);padding:1px 6px;border-radius:4px;font-family:JetBrains Mono">id</code>. Pandas will use it to figure out which row on the left matches which row on the right.';
+    document.querySelectorAll('.mg-l-cell[data-c="0"]:not([data-r="0"]), .mg-r-cell[data-c="0"]:not([data-r="0"])').forEach(e => e.classList.add('highlight'));
+  } else if (step === 2) {
+    cap.innerHTML = '<strong>Row by row</strong>, pandas pairs them up. id 101 on the left finds id 101 on the right — and so on.';
+    document.querySelectorAll('.mg-arrow').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 350));
+  } else if (step === 3) {
+    cap.innerHTML = '<strong>Done!</strong> One combined table with every column from both sources. No row is lost, no row is duplicated.';
+    document.querySelectorAll('.mg-arrow').forEach(e => e.style.opacity = 1);
+    document.getElementById('mg-result-label').style.opacity = 1;
+    document.querySelectorAll('.mg-res, .mg-res-t').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 50));
+  }
+});
+function resetMg() { for (let i = 0; i < 4; i++) document.getElementById('mg-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   6. PIVOT TABLE animation
+   ════════════════════════════════════════════════════════════ */
+const pvLong = [
+  ['Pune', 'Soap', 30],
+  ['Pune', 'Tea', 50],
+  ['Delhi', 'Soap', 20],
+  ['Delhi', 'Tea', 70],
+  ['Pune', 'Soap', 10],
+  ['Delhi', 'Tea', 30]
+];
+function buildPv() {
+  const long = document.getElementById('pv-long');
+  const piv = document.getElementById('pv-pivot');
+  const arr = document.getElementById('pv-arrows');
+  long.innerHTML = piv.innerHTML = arr.innerHTML = '';
+  // long table on left
+  const lX = 30, w = 70, h = 30, gap = 3;
+  const headers = ['city', 'product', 'sales'];
+  headers.forEach((h_, c) => {
+    long.insertAdjacentHTML('beforeend',
+      `<rect x="${lX + c*(w + gap)}" y="40" width="${w}" height="${h}" rx="5" fill="#FFE9D6" stroke="var(--orange)" stroke-width="1.5"/>
+       <text class="cell-text" x="${lX + c*(w + gap) + w/2}" y="${55}" style="font-size:11px;fill:var(--orange);font-weight:700">${h_}</text>`);
+  });
+  pvLong.forEach((row, r) => {
+    row.forEach((v, c) => {
+      const y = 40 + (r+1)*(h + gap);
+      long.insertAdjacentHTML('beforeend',
+        `<rect class="pv-row" data-r="${r}" data-c="${c}" x="${lX + c*(w + gap)}" y="${y}" width="${w}" height="${h}" rx="5" fill="#fff" stroke="var(--border)" stroke-width="1.5"/>
+         <text class="cell-text" x="${lX + c*(w + gap) + w/2}" y="${y + h/2}" style="font-size:11px;font-weight:600">${v}</text>`);
+    });
+  });
+  // pivot table on right: cities × products
+  const cities = ['Pune', 'Delhi'];
+  const products = ['Soap', 'Tea'];
+  const pivX = 410, pivW = 110;
+  // top-left corner
+  piv.insertAdjacentHTML('beforeend',
+    `<rect x="${pivX}" y="40" width="${pivW}" height="${h}" rx="5" fill="#fff" stroke="var(--border)" stroke-width="1.5"/>
+     <text class="cell-text" x="${pivX + pivW/2}" y="55" style="font-size:10px;fill:var(--text-muted);font-weight:600">city ↓ / product →</text>`);
+  // product headers
+  products.forEach((p, i) => {
+    piv.insertAdjacentHTML('beforeend',
+      `<rect x="${pivX + (i+1)*pivW}" y="40" width="${pivW}" height="${h}" rx="5" fill="var(--green-light)" stroke="var(--green)" stroke-width="1.5"/>
+       <text class="cell-text" x="${pivX + (i+1)*pivW + pivW/2}" y="55" style="font-size:11px;fill:var(--green);font-weight:700">${p}</text>`);
+  });
+  // rows
+  cities.forEach((city, ci) => {
+    const y = 40 + (ci+1)*(h + gap);
+    piv.insertAdjacentHTML('beforeend',
+      `<rect x="${pivX}" y="${y}" width="${pivW}" height="${h}" rx="5" fill="var(--green-light)" stroke="var(--green)" stroke-width="1.5"/>
+       <text class="cell-text" x="${pivX + pivW/2}" y="${y + h/2}" style="font-size:11px;fill:var(--green);font-weight:700">${city}</text>`);
+    products.forEach((prod, pi) => {
+      const sum = pvLong.filter(r => r[0] === city && r[1] === prod).reduce((a, r) => a + r[2], 0);
+      piv.insertAdjacentHTML('beforeend',
+        `<rect class="pv-cell" data-city="${city}" data-prod="${prod}" x="${pivX + (pi+1)*pivW}" y="${y}" width="${pivW}" height="${h}" rx="5" fill="#fff" stroke="var(--border)" stroke-width="1.5" opacity="0"/>
+         <text class="cell-text pv-cell-t" data-city="${city}" data-prod="${prod}" x="${pivX + (pi+1)*pivW + pivW/2}" y="${y + h/2}" style="font-size:13px;font-weight:700;fill:var(--navy)" opacity="0">${sum}</text>`);
+    });
+  });
+}
+buildPv();
+makeStepper('pv', 4, (step, cap) => {
+  document.querySelectorAll('.pv-row').forEach(e => { e.setAttribute('fill', '#fff'); e.setAttribute('stroke', 'var(--border)'); });
+  document.querySelectorAll('.pv-cell, .pv-cell-t').forEach(e => e.style.opacity = 0);
+  document.getElementById('pv-pivot-label').style.opacity = 0;
+  document.getElementById('pv-arrows').style.opacity = 0;
+
+  if (step === 0) {
+    cap.innerHTML = 'A sales log — every transaction is one row. Hard to spot patterns when it\'s this long.';
+  } else if (step === 1) {
+    cap.innerHTML = 'We pick <strong>city</strong> for rows, <strong>product</strong> for columns, <strong>sales</strong> as the values to add up.';
+    // highlight columns of long table
+    document.querySelectorAll('.pv-row[data-c="0"]').forEach(e => { e.setAttribute('fill', '#FFE9D6'); e.setAttribute('stroke', 'var(--orange)'); });
+    document.querySelectorAll('.pv-row[data-c="1"]').forEach(e => { e.setAttribute('fill', 'var(--green-light)'); e.setAttribute('stroke', 'var(--green)'); });
+  } else if (step === 2) {
+    cap.innerHTML = 'Pandas groups every row by (city, product) and <strong>sums up the sales</strong> for each combination.';
+    document.querySelectorAll('.pv-row[data-c="0"]').forEach(e => { e.setAttribute('fill', '#FFE9D6'); e.setAttribute('stroke', 'var(--orange)'); });
+    document.querySelectorAll('.pv-row[data-c="1"]').forEach(e => { e.setAttribute('fill', 'var(--green-light)'); e.setAttribute('stroke', 'var(--green)'); });
+    document.getElementById('pv-pivot-label').style.opacity = 1;
+    document.querySelectorAll('.pv-cell, .pv-cell-t').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 200));
+  } else if (step === 3) {
+    cap.innerHTML = '<strong>Now the story is obvious:</strong> Delhi sells far more tea (100), Pune sells more soap (40). One grid, instant pattern.';
+    document.querySelectorAll('.pv-row[data-c="0"]').forEach(e => { e.setAttribute('fill', '#FFE9D6'); e.setAttribute('stroke', 'var(--orange)'); });
+    document.querySelectorAll('.pv-row[data-c="1"]').forEach(e => { e.setAttribute('fill', 'var(--green-light)'); e.setAttribute('stroke', 'var(--green)'); });
+    document.getElementById('pv-pivot-label').style.opacity = 1;
+    document.querySelectorAll('.pv-cell, .pv-cell-t').forEach(e => e.style.opacity = 1);
+  }
+});
+function resetPv() { for (let i = 0; i < 4; i++) document.getElementById('pv-prev').click(); }
+</script>
+</body>
+</html>

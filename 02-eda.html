@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exploratory Data Analysis · MokshPath</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);--navy:#2B2D42;--navy-dark:#1A1B2E;--bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;--text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;--border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--purple:#7C5AC2;--red:#E74C3C;--shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);--radius:14px;--radius-sm:8px}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+.nav{position:sticky;top:0;z-index:100;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm)}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo-icon{width:42px;height:42px}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.15}
+.nav-logo-name{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--navy)}
+.nav-logo-name span{color:var(--orange)}
+.nav-logo-tag{font-size:.62rem;color:var(--text-muted);font-weight:500;letter-spacing:.02em}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+.brand-mark{position:fixed;top:80px;right:24px;width:72px;height:auto;z-index:50;opacity:.92;filter:drop-shadow(0 6px 18px rgba(232,122,46,0.25));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.hero{padding:4rem 2rem 2.5rem;text-align:center;position:relative}
+.hero-inner{max-width:920px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem 1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.3)}}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.13;color:var(--navy);margin-bottom:1rem}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.02rem;color:var(--text-secondary);line-height:1.7;max-width:600px;margin:0 auto 1.6rem}
+.hero-toc{display:inline-flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1rem}
+.hero-toc a{padding:.4rem .9rem;border-radius:50px;background:var(--bg-card);border:1px solid var(--border);font-size:.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .2s}
+.hero-toc a:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+
+.section{padding:3rem 2rem;border-top:1px solid var(--border)}
+.section:nth-of-type(odd){background:var(--bg-light)}
+.container{max-width:1080px;margin:0 auto}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:var(--orange);color:#fff;font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:.8rem;box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.sec-num.n2{background:#E8A040}
+.sec-num.n3{background:#66BB6A}
+.sec-num.n4{background:var(--green)}
+.sec-num.n5{background:var(--blue)}
+.sec-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);margin-bottom:.4rem;line-height:1.2}
+.sec-intro{font-size:.95rem;color:var(--text-secondary);max-width:680px;line-height:1.7;margin-bottom:1.6rem}
+
+.analogy{background:linear-gradient(135deg,var(--orange-glow),rgba(232,122,46,0.04));border:1px solid rgba(232,122,46,0.2);border-left:4px solid var(--orange);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;gap:.85rem;align-items:flex-start}
+.analogy-icon{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.analogy-body{flex:1}
+.analogy-label{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.analogy-text{font-size:.9rem;color:var(--text-primary);line-height:1.55}
+
+.stage{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stage-svg{width:100%;height:auto;display:block;max-height:420px}
+
+.controls{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px dashed var(--border);flex-wrap:wrap}
+.control-info{flex:1;min-width:200px}
+.control-step{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem}
+.control-caption{font-size:.92rem;color:var(--text-primary);font-weight:500;line-height:1.45}
+.control-btns{display:flex;gap:.5rem;flex-shrink:0}
+.ctrl{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.ctrl-prev{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-prev:hover:not(:disabled){background:var(--bg-light);color:var(--navy)}
+.ctrl-prev:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-next{background:var(--orange);color:#fff}
+.ctrl-next:hover:not(:disabled){background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.ctrl-next:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-replay{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-replay:hover{background:var(--bg-light);color:var(--navy)}
+
+.code-block{background:var(--navy-dark);color:#e8e8e8;border-radius:var(--radius-sm);padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.6;margin-top:1.2rem;overflow-x:auto}
+.code-block .kw{color:#F5943E}.code-block .str{color:#A5D6A7}.code-block .com{color:#8B8E9E;font-style:italic}.code-block .fn{color:#90CAF9}.code-block .num{color:#FFCC80}
+
+.step-dots{display:flex;gap:.4rem;margin-top:.8rem;justify-content:center}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s}
+.step-dot.active{background:var(--orange);transform:scale(1.3)}
+.step-dot.done{background:var(--green)}
+
+.dot-anim{transition:cx .6s cubic-bezier(.4,0,.2,1), cy .6s cubic-bezier(.4,0,.2,1), r .4s, opacity .3s, fill .3s}
+.bar-anim{transition:height .6s cubic-bezier(.4,0,.2,1), y .6s cubic-bezier(.4,0,.2,1), opacity .3s, fill .3s}
+.axis-line{stroke:var(--border);stroke-width:1.5}
+.axis-text{font-family:'Plus Jakarta Sans';font-size:11px;fill:var(--text-muted);font-weight:600}
+.axis-title{font-family:'Plus Jakarta Sans';font-size:12px;fill:var(--navy);font-weight:700}
+
+/* takeaway box */
+.takeaway{background:var(--navy-dark);color:#fff;border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-top:1.2rem;display:flex;gap:.85rem;align-items:flex-start}
+.takeaway-icon{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.takeaway-label{font-size:.7rem;font-weight:700;color:var(--orange-light);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem}
+.takeaway-text{font-size:.88rem;line-height:1.55;color:rgba(255,255,255,0.85)}
+
+footer{background:var(--bg-card);border-top:1px solid var(--border);padding:1.6rem 2rem;text-align:center;margin-top:2rem}
+.footer-copy{font-size:.78rem;color:var(--text-muted)}
+.footer-nav{display:flex;justify-content:center;gap:1rem;margin-top:.6rem;flex-wrap:wrap}
+.footer-nav a{font-size:.78rem;color:var(--orange);text-decoration:none;font-weight:600}
+
+@media(max-width:720px){
+  .brand-mark{width:48px;top:72px;right:12px}
+  .section{padding:2.2rem 1.2rem}
+  .hero{padding:3rem 1.2rem 2rem}
+  .nav{padding:0 1rem}
+  .nav-logo-tag{display:none}
+  .controls{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-icon" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="14" r="6" fill="#E87A2E"/><path d="M21 20c-6 0-10 3-10 7 0 2 1 3 2 4l2-3c1-1.5 2.5-2 3-2h6c.5 0 2 .5 3 2l2 3c1-1 2-2 2-4 0-4-4-7-10-7z" fill="#E87A2E"/><path d="M11 31c0 0 2 4 10 4s10-4 10-4" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="21" cy="38" rx="8" ry="2" fill="#E87A2E" opacity=".15"/><path d="M8 27l-3 2m29-2l3 2" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><circle cx="21" cy="14" r="3" fill="#FFF" opacity=".3"/></svg>
+    <div class="nav-logo-text"><span class="nav-logo-name">Moksh<span>Path</span></span><span class="nav-logo-tag">Guided Path to True Learning</span></div>
+  </a>
+  <div class="nav-right">
+    <span class="nav-pill"><span style="width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block"></span>Lesson 2 of 4</span>
+  </div>
+</nav>
+
+<img src="hero.svg" alt="MokshPath" class="brand-mark">
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Exploratory Data Analysis</div>
+    <h1>Listen to your data — <em>before</em> you model it</h1>
+    <p class="hero-sub">EDA is the <em>"first conversation"</em> with a fresh dataset. We sketch a few quick pictures, ask: <em>what shape is this? are there surprises?</em> and let the data tell us where to look next. Below, each picture builds itself step-by-step.</p>
+    <nav class="hero-toc">
+      <a href="#dist">Distributions</a>
+      <a href="#hist">Histograms</a>
+      <a href="#box">Boxplots</a>
+      <a href="#corr">Correlation matrix</a>
+      <a href="#pair">Pair plots</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────── 1. DISTRIBUTIONS ─────────── -->
+<section class="section" id="dist">
+  <div class="container">
+    <div class="sec-num">1</div>
+    <h2 class="sec-title">Distributions — the "shape" of your numbers</h2>
+    <p class="sec-intro">Take any column of numbers (heights, prices, exam marks) and ask: <em>where do most of the values sit, and how spread out are they?</em> That arrangement is the <strong>distribution</strong>. Before any maths, just look at the shape.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">👥</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">If you lined up 100 random adults <strong>shortest to tallest</strong>, you'd see a few short people on the left, a crowd of average-height people in the middle, and a few tall people on the right. That bell shape <em>is</em> the distribution of human height.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="dist-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- axis -->
+        <line x1="60" y1="290" x2="680" y2="290" class="axis-line"/>
+        <text class="axis-title" x="370" y="335" text-anchor="middle">Height (cm)</text>
+        <!-- tick labels -->
+        <g id="dist-ticks"></g>
+        <!-- the dots (people) -->
+        <g id="dist-dots"></g>
+        <!-- the smoothed curve -->
+        <path id="dist-curve" d="" fill="none" stroke="var(--orange)" stroke-width="3" opacity="0"/>
+        <path id="dist-fill" d="" fill="var(--orange-glow)" stroke="none" opacity="0"/>
+        <!-- annotations -->
+        <g id="dist-mean" opacity="0">
+          <line x1="370" y1="100" x2="370" y2="290" stroke="var(--orange)" stroke-width="2" stroke-dasharray="4 4"/>
+          <text x="370" y="92" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--orange)">mean ≈ 170</text>
+        </g>
+        <g id="dist-spread" opacity="0">
+          <path d="M 240 60 L 240 290 M 500 60 L 500 290" stroke="var(--blue)" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <path d="M 240 70 L 500 70" stroke="var(--blue)" stroke-width="1.5"/>
+          <path d="M 240 65 L 240 75 M 500 65 L 500 75" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="370" y="58" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--blue)">SPREAD (most data lies here)</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="dist-step">Step 1 of 4</div>
+          <div class="control-caption" id="dist-cap">100 random adults. Each dot is one person's height. Right now they're scattered randomly along the line.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="dist-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetDist()">↺</button>
+          <button class="ctrl ctrl-next" id="dist-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="dist-dots-prog"></div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Why care?</div>
+        <div class="takeaway-text">Many models assume a tidy bell shape. If your data is skewed (long tail on one side), shaped like a camel (two humps), or has a wall (cut-off), the model will silently lie to you. Always look first.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 2. HISTOGRAMS ─────────── -->
+<section class="section" id="hist">
+  <div class="container">
+    <div class="sec-num n2">2</div>
+    <h2 class="sec-title">Histograms — counting people in height-buckets</h2>
+    <p class="sec-intro">A histogram is the simplest way to see a distribution. Chop the range into equal "bins" (160–165, 165–170, 170–175…), drop each value into its bin, and stack them up. The taller the bar, the more values landed there.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🪣</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Imagine <strong>buckets lined up by height range</strong>. Each person walks up to the bucket their height belongs in and drops a ball. After everyone's done, the bar of balls in each bucket = the bar in your histogram.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="hist-svg" viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+        <line x1="60" y1="320" x2="680" y2="320" class="axis-line"/>
+        <line x1="60" y1="40" x2="60" y2="320" class="axis-line"/>
+        <text class="axis-title" x="370" y="360" text-anchor="middle">Height (cm)</text>
+        <text class="axis-title" x="20" y="180" text-anchor="middle" transform="rotate(-90, 20, 180)">Count</text>
+        <g id="hist-bins"></g>
+        <g id="hist-bars"></g>
+        <g id="hist-dots"></g>
+        <g id="hist-counts"></g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="hist-step">Step 1 of 5</div>
+          <div class="control-caption" id="hist-cap">A pile of 60 height values. They sit at the bottom waiting to be counted.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="hist-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetHist()">↺</button>
+          <button class="ctrl ctrl-next" id="hist-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="hist-dots-prog"></div>
+    </div>
+
+    <div class="code-block">
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+plt.<span class="fn">hist</span>(df[<span class="str">"height"</span>], bins=<span class="num">8</span>, edgecolor=<span class="str">"white"</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">"Height (cm)"</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">"Count"</span>)
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 3. BOXPLOTS ─────────── -->
+<section class="section" id="box">
+  <div class="container">
+    <div class="sec-num n3">3</div>
+    <h2 class="sec-title">Boxplots — the 5-number summary, drawn</h2>
+    <p class="sec-intro">A boxplot is a tiny diagram that summarises the whole distribution in 5 numbers: the smallest, the 25% mark, the middle, the 75% mark, and the largest. The dots floating outside are the unusual ones — <em>outliers</em>.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">📏</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Think of a <strong>school class lined up by height</strong>. The shortest and tallest students mark the edges. The middle kid is the <em>median</em>. The middle-50% of the line (the everyday students) is the box. Anyone freakishly tall or short stands apart — an outlier.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="box-svg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- axis -->
+        <line x1="100" y1="290" x2="680" y2="290" class="axis-line"/>
+        <text class="axis-title" x="390" y="335" text-anchor="middle">Marks (out of 100)</text>
+        <g id="box-ticks"></g>
+        <!-- raw dots (students) -->
+        <g id="box-dots"></g>
+        <!-- box parts (drawn but hidden until step) -->
+        <g id="box-parts">
+          <!-- whiskers -->
+          <line id="bp-min-line" x1="0" y1="170" x2="0" y2="230" stroke="var(--navy)" stroke-width="2" opacity="0"/>
+          <line id="bp-max-line" x1="0" y1="170" x2="0" y2="230" stroke="var(--navy)" stroke-width="2" opacity="0"/>
+          <line id="bp-whisker" x1="0" y1="200" x2="0" y2="200" stroke="var(--navy)" stroke-width="2" stroke-dasharray="4 3" opacity="0"/>
+          <!-- box -->
+          <rect id="bp-box" x="0" y="170" width="0" height="60" fill="var(--orange-glow)" stroke="var(--orange)" stroke-width="2.5" opacity="0"/>
+          <!-- median -->
+          <line id="bp-median" x1="0" y1="170" x2="0" y2="230" stroke="var(--orange)" stroke-width="3.5" opacity="0"/>
+        </g>
+        <!-- labels -->
+        <g id="box-labels"></g>
+        <!-- outlier highlights -->
+        <g id="box-outliers"></g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="box-step">Step 1 of 5</div>
+          <div class="control-caption" id="box-cap">A class of 25 students plotted by their test marks. Each dot is one student.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="box-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetBox()">↺</button>
+          <button class="ctrl ctrl-next" id="box-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="box-dots-prog"></div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">🎯</div>
+      <div>
+        <div class="takeaway-label">Read a boxplot in 3 seconds</div>
+        <div class="takeaway-text"><strong>Box</strong> = middle 50% of your data. <strong>Line inside box</strong> = the median (the middle student). <strong>Whiskers</strong> = the normal range. <strong>Dots outside</strong> = outliers worth investigating.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 4. CORRELATION MATRIX ─────────── -->
+<section class="section" id="corr">
+  <div class="container">
+    <div class="sec-num n4">4</div>
+    <h2 class="sec-title">Correlation matrix — which columns move together?</h2>
+    <p class="sec-intro">Correlation measures whether two columns rise and fall together. A score of <strong>+1</strong> = perfect "together" movement, <strong>−1</strong> = perfect "opposite", <strong>0</strong> = no relationship. A correlation <em>matrix</em> is just a heatmap of these scores for every pair of columns.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🌡️</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text"><strong>Ice-cream sales and temperature</strong> rise together — strong positive correlation. <strong>Heater sales and temperature</strong> move opposite — strong negative correlation. <strong>Ice-cream sales and a person's age</strong>? Probably no link — near zero.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="corr-svg" viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- left: scatter examples -->
+        <g id="corr-scatter">
+          <text class="axis-title" x="170" y="22" text-anchor="middle">Two columns over time</text>
+        </g>
+        <!-- right: matrix -->
+        <g id="corr-matrix" opacity="0">
+          <text class="axis-title" x="540" y="22" text-anchor="middle">Correlation Matrix</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="corr-step">Step 1 of 5</div>
+          <div class="control-caption" id="corr-cap">Two columns: temperature and ice-cream sales. Notice how the dots climb together — when one is high, the other is too.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="corr-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetCorr()">↺</button>
+          <button class="ctrl ctrl-next" id="corr-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="corr-dots-prog"></div>
+    </div>
+
+    <div class="code-block">
+df.<span class="fn">corr</span>()                   <span class="com"># a square table of correlations</span>
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+sns.<span class="fn">heatmap</span>(df.<span class="fn">corr</span>(), annot=<span class="kw">True</span>, cmap=<span class="str">"coolwarm"</span>)
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 5. PAIR PLOTS ─────────── -->
+<section class="section" id="pair">
+  <div class="container">
+    <div class="sec-num n5">5</div>
+    <h2 class="sec-title">Pair plots — every column vs every other column, at once</h2>
+    <p class="sec-intro">A pair plot is a grid of small scatter plots: row <em>i</em>, column <em>j</em> shows column <em>i</em> against column <em>j</em>. The diagonal shows each column's own distribution. One picture, every relationship.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🎭</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Like a <strong>round-robin sports tournament</strong>: every team plays every other team. A pair plot is the score-board — at a glance you see who beats whom, who's evenly matched, and who's an outlier.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="pair-svg" viewBox="0 0 720 460" xmlns="http://www.w3.org/2000/svg">
+        <g id="pair-grid"></g>
+        <g id="pair-highlight" opacity="0">
+          <rect x="0" y="0" width="0" height="0" rx="6" fill="none" stroke="var(--orange)" stroke-width="3"/>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="pair-step">Step 1 of 4</div>
+          <div class="control-caption" id="pair-cap">A flower dataset with 3 measurements per flower: <em>sepal length, petal length, petal width</em>. We will make one plot for every pair.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="pair-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetPair()">↺</button>
+          <button class="ctrl ctrl-next" id="pair-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="pair-dots-prog"></div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">🔍</div>
+      <div>
+        <div class="takeaway-label">What to look for</div>
+        <div class="takeaway-text">Tight diagonal lines → strong relationships. Cloud-like shapes → no relationship. Distinct colour clusters → your groups (species, customers, regions) really do differ. A pair plot is your <strong>first 30 seconds with new data</strong>.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">© 2026 MokshPath · Guided Path to True Learning</div>
+  <div class="footer-nav">
+    <a href="01-python-review.html">← Python Review</a>
+    <a href="03-feature-engineering.html">Next: Feature Engineering →</a>
+  </div>
+</footer>
+
+<script>
+function makeStepper(prefix, totalSteps, stepFn) {
+  const prev = document.getElementById(prefix + '-prev');
+  const next = document.getElementById(prefix + '-next');
+  const stepLabel = document.getElementById(prefix + '-step');
+  const cap = document.getElementById(prefix + '-cap');
+  const dotsEl = document.getElementById(prefix + '-dots-prog');
+  let current = 0;
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < totalSteps; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot';
+    dotsEl.appendChild(d);
+  }
+  function render() {
+    stepLabel.textContent = `Step ${current + 1} of ${totalSteps}`;
+    prev.disabled = current === 0;
+    next.disabled = current === totalSteps - 1;
+    next.textContent = current === totalSteps - 1 ? 'Done ✓' : 'Next ▶';
+    Array.from(dotsEl.children).forEach((d, i) => {
+      d.classList.remove('active', 'done');
+      if (i < current) d.classList.add('done');
+      else if (i === current) d.classList.add('active');
+    });
+    stepFn(current, cap);
+  }
+  prev.addEventListener('click', () => { if (current > 0) { current--; render(); } });
+  next.addEventListener('click', () => { if (current < totalSteps - 1) { current++; render(); } });
+  render();
+  return { reset: () => { current = 0; render(); } };
+}
+
+/* ════════════════════════════════════════════════════════════
+   1. DISTRIBUTIONS — 100 dots, scattered → form bell curve
+   ════════════════════════════════════════════════════════════ */
+function gaussian() {
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const distData = Array.from({length: 80}, () => 170 + gaussian() * 9);
+function distXOf(v) { return 60 + (v - 140) / 60 * 620; } // 140..200 → 60..680
+function buildDist() {
+  const dots = document.getElementById('dist-dots');
+  const ticks = document.getElementById('dist-ticks');
+  dots.innerHTML = ticks.innerHTML = '';
+  // ticks every 10
+  for (let h = 140; h <= 200; h += 10) {
+    const x = distXOf(h);
+    ticks.insertAdjacentHTML('beforeend',
+      `<line x1="${x}" y1="288" x2="${x}" y2="294" stroke="var(--border)" stroke-width="1.5"/>
+       <text class="axis-text" x="${x}" y="310" text-anchor="middle">${h}</text>`);
+  }
+  distData.forEach((v, i) => {
+    // scattered initial positions (random y across the canvas)
+    const sx = 60 + Math.random() * 620;
+    const sy = 60 + Math.random() * 200;
+    dots.insertAdjacentHTML('beforeend',
+      `<circle class="dot-anim dist-dot" data-i="${i}" data-v="${v}" cx="${sx}" cy="${sy}" r="4" fill="var(--orange)" opacity=".75"/>`);
+  });
+}
+buildDist();
+function densityCurvePath() {
+  // approximate normal density curve scaled to canvas
+  const mu = 170, sd = 9;
+  let pts = [];
+  for (let h = 140; h <= 200; h += 2) {
+    const y = 290 - 200 * Math.exp(-0.5 * ((h - mu) / sd) ** 2);
+    pts.push(`${distXOf(h)},${y}`);
+  }
+  return 'M ' + pts.join(' L ');
+}
+function densityFillPath() {
+  return densityCurvePath() + ` L ${distXOf(200)},290 L ${distXOf(140)},290 Z`;
+}
+makeStepper('dist', 4, (step, cap) => {
+  const curve = document.getElementById('dist-curve');
+  const fill = document.getElementById('dist-fill');
+  const meanG = document.getElementById('dist-mean');
+  const spreadG = document.getElementById('dist-spread');
+  // reset
+  curve.style.opacity = 0;
+  fill.style.opacity = 0;
+  meanG.style.opacity = 0;
+  spreadG.style.opacity = 0;
+
+  if (step === 0) {
+    cap.innerHTML = '80 random adults. Each dot is one person\'s height. Right now they\'re scattered randomly on the canvas.';
+    // re-scatter
+    document.querySelectorAll('.dist-dot').forEach((d, i) => {
+      d.setAttribute('cx', 60 + Math.random() * 620);
+      d.setAttribute('cy', 60 + Math.random() * 200);
+      d.setAttribute('fill', 'var(--orange)');
+    });
+  } else if (step === 1) {
+    cap.innerHTML = 'Now each dot <strong>drops down to its true height</strong> on the number line. Watch where they pile up.';
+    document.querySelectorAll('.dist-dot').forEach((d, i) => {
+      const v = parseFloat(d.getAttribute('data-v'));
+      setTimeout(() => {
+        d.setAttribute('cx', distXOf(v));
+        d.setAttribute('cy', 285);
+      }, i * 15);
+    });
+  } else if (step === 2) {
+    cap.innerHTML = 'The thicker the pile, the more people had that height. Let\'s trace the <strong>shape</strong> of the crowd — that\'s the distribution.';
+    document.querySelectorAll('.dist-dot').forEach((d, i) => {
+      const v = parseFloat(d.getAttribute('data-v'));
+      d.setAttribute('cx', distXOf(v));
+      // jitter y a bit so they don't all overlap on the line
+      const localY = 285 - (Math.abs(gaussian()) * 6);
+      d.setAttribute('cy', 270 + (Math.random() * 20 - 10));
+    });
+    curve.setAttribute('d', densityCurvePath());
+    fill.setAttribute('d', densityFillPath());
+    setTimeout(() => { curve.style.opacity = 1; fill.style.opacity = 1; }, 600);
+  } else if (step === 3) {
+    cap.innerHTML = 'Two numbers describe this shape: the <strong style="color:var(--orange)">centre (mean)</strong> and the <strong style="color:var(--blue)">spread</strong>. That\'s your distribution in 2 numbers.';
+    document.querySelectorAll('.dist-dot').forEach(d => {
+      const v = parseFloat(d.getAttribute('data-v'));
+      d.setAttribute('cx', distXOf(v));
+      d.setAttribute('cy', 270 + (Math.random() * 20 - 10));
+    });
+    curve.setAttribute('d', densityCurvePath());
+    fill.setAttribute('d', densityFillPath());
+    curve.style.opacity = 1;
+    fill.style.opacity = 1;
+    meanG.style.opacity = 1;
+    spreadG.style.opacity = 1;
+  }
+});
+function resetDist() { for (let i = 0; i < 4; i++) document.getElementById('dist-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   2. HISTOGRAM — 60 dots fall into bins
+   ════════════════════════════════════════════════════════════ */
+const histData = Array.from({length: 60}, () => 165 + gaussian() * 7);
+const histBins = [150, 156, 162, 168, 174, 180, 186];
+function histBinX(b) { return 60 + (b - 150) / 36 * 600; } // 150..186 → 60..660
+function buildHist() {
+  const binsG = document.getElementById('hist-bins');
+  const barsG = document.getElementById('hist-bars');
+  const dotsG = document.getElementById('hist-dots');
+  const countsG = document.getElementById('hist-counts');
+  binsG.innerHTML = barsG.innerHTML = dotsG.innerHTML = countsG.innerHTML = '';
+  // bin labels
+  histBins.forEach((b, i) => {
+    const x = histBinX(b);
+    binsG.insertAdjacentHTML('beforeend',
+      `<text class="axis-text" x="${x}" y="340" text-anchor="middle">${b}</text>
+       <line x1="${x}" y1="318" x2="${x}" y2="324" stroke="var(--border)" stroke-width="1.5"/>`);
+  });
+  // count y-axis ticks
+  for (let c = 0; c <= 15; c += 5) {
+    const y = 320 - c * 16;
+    binsG.insertAdjacentHTML('beforeend',
+      `<line x1="55" y1="${y}" x2="60" y2="${y}" stroke="var(--border)" stroke-width="1.5"/>
+       <text class="axis-text" x="50" y="${y + 4}" text-anchor="end">${c}</text>`);
+  }
+  // count per bin
+  const counts = new Array(histBins.length - 1).fill(0);
+  histData.forEach(v => {
+    for (let i = 0; i < histBins.length - 1; i++) {
+      if (v >= histBins[i] && v < histBins[i + 1]) { counts[i]++; break; }
+    }
+  });
+  // bars (hidden initially)
+  counts.forEach((c, i) => {
+    const x1 = histBinX(histBins[i]);
+    const x2 = histBinX(histBins[i + 1]);
+    barsG.insertAdjacentHTML('beforeend',
+      `<rect class="bar-anim hist-bar" data-i="${i}" data-c="${c}" x="${x1 + 3}" y="320" width="${x2 - x1 - 6}" height="0" fill="var(--orange)" opacity="0.85"/>`);
+    countsG.insertAdjacentHTML('beforeend',
+      `<text class="axis-text hist-count" data-i="${i}" x="${(x1 + x2)/2}" y="0" text-anchor="middle" style="fill:var(--orange);font-weight:700;font-size:13px" opacity="0">${c}</text>`);
+  });
+  // dots clustered at bottom
+  histData.forEach((v, i) => {
+    const x = 80 + (i % 20) * 30;
+    const y = 380 + Math.floor(i / 20) * 0; // off-screen below
+    dotsG.insertAdjacentHTML('beforeend',
+      `<circle class="dot-anim hist-dot" data-i="${i}" data-v="${v}" cx="${x}" cy="${y}" r="5" fill="var(--orange)" opacity="0.85"/>`);
+  });
+}
+buildHist();
+makeStepper('hist', 5, (step, cap) => {
+  // reset
+  document.querySelectorAll('.hist-bar').forEach(b => { b.setAttribute('height', 0); b.setAttribute('y', 320); b.style.opacity = 0; });
+  document.querySelectorAll('.hist-count').forEach(t => t.style.opacity = 0);
+  document.querySelectorAll('.hist-bin-marker').forEach(t => t.remove());
+
+  if (step === 0) {
+    cap.innerHTML = 'A pile of 60 height values. Watch them <em>fly</em> into the right bucket.';
+    document.querySelectorAll('.hist-dot').forEach((d, i) => {
+      d.setAttribute('cx', 80 + (i % 20) * 30);
+      d.setAttribute('cy', 380 - (Math.floor(i / 20) * 12));
+      d.style.opacity = 0.85;
+    });
+  } else if (step === 1) {
+    cap.innerHTML = 'First we draw the <strong>bin edges</strong>: 150, 156, 162… every 6 cm. Each "bucket" holds heights in that range.';
+    histBins.forEach(b => {
+      const x = histBinX(b);
+      document.getElementById('hist-bins').insertAdjacentHTML('beforeend',
+        `<line class="hist-bin-marker" x1="${x}" y1="40" x2="${x}" y2="320" stroke="var(--orange-glow)" stroke-width="2"/>`);
+    });
+    document.querySelectorAll('.hist-dot').forEach((d, i) => {
+      d.setAttribute('cx', 80 + (i % 20) * 30);
+      d.setAttribute('cy', 380 - (Math.floor(i / 20) * 12));
+    });
+  } else if (step === 2) {
+    cap.innerHTML = 'Each dot now <strong>flies to its bucket</strong>. Notice some bins fill up much taller than others.';
+    histBins.forEach(b => {
+      const x = histBinX(b);
+      document.getElementById('hist-bins').insertAdjacentHTML('beforeend',
+        `<line class="hist-bin-marker" x1="${x}" y1="40" x2="${x}" y2="320" stroke="var(--orange-glow)" stroke-width="2"/>`);
+    });
+    // stack dots in their bins
+    const bins = new Array(histBins.length - 1).fill(0);
+    document.querySelectorAll('.hist-dot').forEach((d, i) => {
+      const v = parseFloat(d.getAttribute('data-v'));
+      let bi = -1;
+      for (let j = 0; j < histBins.length - 1; j++) {
+        if (v >= histBins[j] && v < histBins[j + 1]) { bi = j; break; }
+      }
+      if (bi >= 0) {
+        const x1 = histBinX(histBins[bi]), x2 = histBinX(histBins[bi + 1]);
+        const cx = (x1 + x2) / 2 + (Math.random() * 12 - 6);
+        const stackY = 314 - bins[bi] * 11;
+        bins[bi]++;
+        setTimeout(() => { d.setAttribute('cx', cx); d.setAttribute('cy', stackY); }, i * 30);
+      }
+    });
+  } else if (step === 3) {
+    cap.innerHTML = 'Now we <strong>fill in the bar</strong> for each bucket — its height is just the count of dots inside.';
+    histBins.forEach(b => {
+      const x = histBinX(b);
+      document.getElementById('hist-bins').insertAdjacentHTML('beforeend',
+        `<line class="hist-bin-marker" x1="${x}" y1="40" x2="${x}" y2="320" stroke="var(--orange-glow)" stroke-width="2"/>`);
+    });
+    // dots stay stacked (no transition)
+    const bins = new Array(histBins.length - 1).fill(0);
+    document.querySelectorAll('.hist-dot').forEach(d => {
+      const v = parseFloat(d.getAttribute('data-v'));
+      let bi = -1;
+      for (let j = 0; j < histBins.length - 1; j++) {
+        if (v >= histBins[j] && v < histBins[j + 1]) { bi = j; break; }
+      }
+      if (bi >= 0) {
+        const x1 = histBinX(histBins[bi]), x2 = histBinX(histBins[bi + 1]);
+        const cx = (x1 + x2) / 2 + (Math.random() * 12 - 6);
+        const stackY = 314 - bins[bi] * 11;
+        bins[bi]++;
+        d.setAttribute('cx', cx);
+        d.setAttribute('cy', stackY);
+        d.style.opacity = 0.5;
+      }
+    });
+    document.querySelectorAll('.hist-bar').forEach((b, i) => {
+      const c = parseInt(b.getAttribute('data-c'));
+      const h = c * 16;
+      setTimeout(() => { b.style.opacity = 0.85; b.setAttribute('height', h); b.setAttribute('y', 320 - h); }, i * 100);
+    });
+  } else if (step === 4) {
+    cap.innerHTML = '<strong>The story is now visible:</strong> most heights cluster around 162–174 cm. Few people are shorter than 156 or taller than 180. That\'s the distribution.';
+    histBins.forEach(b => {
+      const x = histBinX(b);
+      document.getElementById('hist-bins').insertAdjacentHTML('beforeend',
+        `<line class="hist-bin-marker" x1="${x}" y1="40" x2="${x}" y2="320" stroke="var(--orange-glow)" stroke-width="2"/>`);
+    });
+    // hide dots, show bars + counts
+    document.querySelectorAll('.hist-dot').forEach(d => { d.style.opacity = 0; });
+    document.querySelectorAll('.hist-bar').forEach((b, i) => {
+      const c = parseInt(b.getAttribute('data-c'));
+      const h = c * 16;
+      b.style.opacity = 0.95;
+      b.setAttribute('height', h);
+      b.setAttribute('y', 320 - h);
+    });
+    document.querySelectorAll('.hist-count').forEach((t, i) => {
+      const c = parseInt(document.querySelector(`.hist-bar[data-i="${i}"]`).getAttribute('data-c'));
+      const h = c * 16;
+      t.setAttribute('y', 320 - h - 6);
+      setTimeout(() => t.style.opacity = 1, 200 + i * 80);
+    });
+  }
+});
+function resetHist() { for (let i = 0; i < 5; i++) document.getElementById('hist-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   3. BOXPLOT — 25 students, build box parts
+   ════════════════════════════════════════════════════════════ */
+// Build a dataset with 2 deliberate outliers
+const boxData = (() => {
+  const arr = Array.from({length: 23}, () => 60 + gaussian() * 11);
+  arr.push(15);  // low outlier
+  arr.push(98);  // high outlier
+  return arr.map(v => Math.max(0, Math.min(100, v)));
+})();
+function boxXOf(v) { return 100 + v / 100 * 580; } // 0..100 → 100..680
+function quantile(arr, q) {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  return sorted[base + 1] !== undefined ? sorted[base] + rest * (sorted[base + 1] - sorted[base]) : sorted[base];
+}
+const boxQ1 = quantile(boxData, 0.25), boxQ2 = quantile(boxData, 0.5), boxQ3 = quantile(boxData, 0.75);
+const boxIqr = boxQ3 - boxQ1;
+const boxLow = boxQ1 - 1.5 * boxIqr, boxHigh = boxQ3 + 1.5 * boxIqr;
+const boxNonOut = boxData.filter(v => v >= boxLow && v <= boxHigh);
+const boxMin = Math.min(...boxNonOut), boxMax = Math.max(...boxNonOut);
+
+function buildBox() {
+  const dotsG = document.getElementById('box-dots');
+  const ticksG = document.getElementById('box-ticks');
+  dotsG.innerHTML = ticksG.innerHTML = '';
+  for (let v = 0; v <= 100; v += 20) {
+    const x = boxXOf(v);
+    ticksG.insertAdjacentHTML('beforeend',
+      `<line x1="${x}" y1="288" x2="${x}" y2="294" stroke="var(--border)" stroke-width="1.5"/>
+       <text class="axis-text" x="${x}" y="310" text-anchor="middle">${v}</text>`);
+  }
+  boxData.forEach((v, i) => {
+    // scatter vertically a bit so dots don't overlap
+    const y = 200 + (i % 5 - 2) * 12 + (Math.random() * 6 - 3);
+    const isOut = (v < boxLow || v > boxHigh);
+    dotsG.insertAdjacentHTML('beforeend',
+      `<circle class="dot-anim box-dot" data-i="${i}" data-v="${v}" data-out="${isOut}" cx="${boxXOf(v)}" cy="${y}" r="4.5" fill="${isOut ? 'var(--red)' : 'var(--navy)'}" opacity="0.8"/>`);
+  });
+}
+buildBox();
+makeStepper('box', 5, (step, cap) => {
+  const ids = ['bp-min-line', 'bp-max-line', 'bp-whisker', 'bp-box', 'bp-median'];
+  ids.forEach(id => document.getElementById(id).style.opacity = 0);
+  document.getElementById('box-labels').innerHTML = '';
+  // dots → normal navy
+  document.querySelectorAll('.box-dot').forEach(d => { d.style.opacity = 0.8; d.setAttribute('r', 4.5); });
+
+  if (step === 0) {
+    cap.innerHTML = 'A class of 25 students plotted by their test marks. Each dot is one student.';
+  } else if (step === 1) {
+    cap.innerHTML = 'Sort them. The <strong>middle student\'s mark</strong> is the <em>median</em> (the orange line). Half the class scored less, half scored more.';
+    document.getElementById('bp-median').setAttribute('x1', boxXOf(boxQ2));
+    document.getElementById('bp-median').setAttribute('x2', boxXOf(boxQ2));
+    document.getElementById('bp-median').style.opacity = 1;
+    document.getElementById('box-labels').insertAdjacentHTML('beforeend',
+      `<text class="axis-text" x="${boxXOf(boxQ2)}" y="160" text-anchor="middle" style="font-weight:700;fill:var(--orange);font-size:12px">median = ${boxQ2.toFixed(0)}</text>`);
+  } else if (step === 2) {
+    cap.innerHTML = 'Now draw a <strong>box</strong> from the 25% mark (Q1) to the 75% mark (Q3). The middle 50% of students live inside this box.';
+    const x1 = boxXOf(boxQ1), x2 = boxXOf(boxQ3);
+    document.getElementById('bp-box').setAttribute('x', x1);
+    document.getElementById('bp-box').setAttribute('width', x2 - x1);
+    document.getElementById('bp-box').style.opacity = 1;
+    document.getElementById('bp-median').setAttribute('x1', boxXOf(boxQ2));
+    document.getElementById('bp-median').setAttribute('x2', boxXOf(boxQ2));
+    document.getElementById('bp-median').style.opacity = 1;
+    document.getElementById('box-labels').insertAdjacentHTML('beforeend',
+      `<text class="axis-text" x="${x1}" y="160" text-anchor="middle" style="font-weight:700;fill:var(--orange);font-size:11px">Q1 = ${boxQ1.toFixed(0)}</text>
+       <text class="axis-text" x="${x2}" y="160" text-anchor="middle" style="font-weight:700;fill:var(--orange);font-size:11px">Q3 = ${boxQ3.toFixed(0)}</text>
+       <text class="axis-text" x="${(x1+x2)/2}" y="245" text-anchor="middle" style="font-weight:700;fill:var(--orange);font-size:11px">middle 50%</text>`);
+  } else if (step === 3) {
+    cap.innerHTML = 'Stretch <strong>whiskers</strong> out to the smallest and largest <em>normal</em> values. Anyone beyond the whisker is unusually low or high.';
+    const x1 = boxXOf(boxQ1), x2 = boxXOf(boxQ3);
+    const wMin = boxXOf(boxMin), wMax = boxXOf(boxMax);
+    document.getElementById('bp-box').setAttribute('x', x1);
+    document.getElementById('bp-box').setAttribute('width', x2 - x1);
+    document.getElementById('bp-box').style.opacity = 1;
+    document.getElementById('bp-median').setAttribute('x1', boxXOf(boxQ2));
+    document.getElementById('bp-median').setAttribute('x2', boxXOf(boxQ2));
+    document.getElementById('bp-median').style.opacity = 1;
+    // whisker line (dashed) — split into left + right parts
+    document.getElementById('bp-whisker').setAttribute('x1', wMin);
+    document.getElementById('bp-whisker').setAttribute('x2', x1);
+    document.getElementById('bp-whisker').style.opacity = 1;
+    document.getElementById('box-labels').insertAdjacentHTML('beforeend',
+      `<line x1="${x2}" y1="200" x2="${wMax}" y2="200" stroke="var(--navy)" stroke-width="2" stroke-dasharray="4 3"/>`);
+    // min and max tips
+    document.getElementById('bp-min-line').setAttribute('x1', wMin);
+    document.getElementById('bp-min-line').setAttribute('x2', wMin);
+    document.getElementById('bp-min-line').style.opacity = 1;
+    document.getElementById('bp-max-line').setAttribute('x1', wMax);
+    document.getElementById('bp-max-line').setAttribute('x2', wMax);
+    document.getElementById('bp-max-line').style.opacity = 1;
+    document.getElementById('box-labels').insertAdjacentHTML('beforeend',
+      `<text class="axis-text" x="${wMin}" y="160" text-anchor="middle" style="font-weight:700;fill:var(--navy);font-size:11px">min</text>
+       <text class="axis-text" x="${wMax}" y="160" text-anchor="middle" style="font-weight:700;fill:var(--navy);font-size:11px">max</text>`);
+  } else if (step === 4) {
+    cap.innerHTML = '<strong>The dots far outside the whiskers are <span style="color:var(--red)">outliers</span></strong> — students with unusually low or high scores. Worth a closer look.';
+    const x1 = boxXOf(boxQ1), x2 = boxXOf(boxQ3);
+    const wMin = boxXOf(boxMin), wMax = boxXOf(boxMax);
+    document.getElementById('bp-box').setAttribute('x', x1);
+    document.getElementById('bp-box').setAttribute('width', x2 - x1);
+    document.getElementById('bp-box').style.opacity = 1;
+    document.getElementById('bp-median').setAttribute('x1', boxXOf(boxQ2));
+    document.getElementById('bp-median').setAttribute('x2', boxXOf(boxQ2));
+    document.getElementById('bp-median').style.opacity = 1;
+    document.getElementById('bp-whisker').setAttribute('x1', wMin);
+    document.getElementById('bp-whisker').setAttribute('x2', x1);
+    document.getElementById('bp-whisker').style.opacity = 1;
+    document.getElementById('box-labels').insertAdjacentHTML('beforeend',
+      `<line x1="${x2}" y1="200" x2="${wMax}" y2="200" stroke="var(--navy)" stroke-width="2" stroke-dasharray="4 3"/>`);
+    document.getElementById('bp-min-line').setAttribute('x1', wMin);
+    document.getElementById('bp-min-line').setAttribute('x2', wMin);
+    document.getElementById('bp-min-line').style.opacity = 1;
+    document.getElementById('bp-max-line').setAttribute('x1', wMax);
+    document.getElementById('bp-max-line').setAttribute('x2', wMax);
+    document.getElementById('bp-max-line').style.opacity = 1;
+    // pulse the outliers
+    document.querySelectorAll('.box-dot[data-out="true"]').forEach(d => {
+      d.setAttribute('r', 7);
+      d.style.opacity = 1;
+      // add a ring
+      const cx = d.getAttribute('cx'), cy = d.getAttribute('cy');
+      document.getElementById('box-labels').insertAdjacentHTML('beforeend',
+        `<circle cx="${cx}" cy="${cy}" r="13" fill="none" stroke="var(--red)" stroke-width="2" opacity="0.5"/>
+         <text x="${cx}" y="${parseFloat(cy) - 18}" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--red)">outlier</text>`);
+    });
+  }
+});
+function resetBox() { for (let i = 0; i < 5; i++) document.getElementById('box-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   4. CORRELATION — scatter examples + heatmap
+   ════════════════════════════════════════════════════════════ */
+function buildCorr() {
+  const sc = document.getElementById('corr-scatter');
+  const mx = document.getElementById('corr-matrix');
+  sc.innerHTML = '<text class="axis-title" x="170" y="22" text-anchor="middle">Two columns, plotted together</text>';
+  mx.innerHTML = '<text class="axis-title" x="540" y="22" text-anchor="middle">Correlation Matrix</text>';
+
+  // left: scatter area
+  // axis box
+  sc.insertAdjacentHTML('beforeend',
+    `<rect x="40" y="40" width="280" height="280" fill="#fff" stroke="var(--border)" stroke-width="1.5" rx="8"/>
+     <text class="axis-text" x="180" y="345" text-anchor="middle" style="font-weight:700">Temperature →</text>
+     <text class="axis-text" x="25" y="180" text-anchor="middle" style="font-weight:700" transform="rotate(-90, 25, 180)">Ice-cream sales →</text>`);
+
+  // generate two clouds:
+  // (a) positive corr scatter
+  const scatterPos = Array.from({length: 30}, () => {
+    const t = Math.random() * 0.8 + 0.1;
+    const s = t + (Math.random() - 0.5) * 0.18;
+    return { x: 50 + t * 260, y: 310 - Math.max(0.02, Math.min(0.98, s)) * 260, kind: 'pos' };
+  });
+  // (b) negative corr scatter
+  const scatterNeg = Array.from({length: 30}, () => {
+    const t = Math.random() * 0.8 + 0.1;
+    const s = 1 - t + (Math.random() - 0.5) * 0.18;
+    return { x: 50 + t * 260, y: 310 - Math.max(0.02, Math.min(0.98, s)) * 260, kind: 'neg' };
+  });
+  // (c) no corr
+  const scatterZero = Array.from({length: 30}, () => {
+    const t = Math.random();
+    const s = Math.random();
+    return { x: 50 + t * 260, y: 310 - s * 260, kind: 'zero' };
+  });
+  [...scatterPos, ...scatterNeg, ...scatterZero].forEach((p, i) => {
+    sc.insertAdjacentHTML('beforeend',
+      `<circle class="dot-anim corr-dot ${p.kind}" cx="${p.x}" cy="${p.y}" r="4.5" fill="${p.kind === 'pos' ? 'var(--orange)' : p.kind === 'neg' ? 'var(--blue)' : 'var(--text-muted)'}" opacity="0"/>`);
+  });
+  // trend line (drawn for positive corr by default)
+  sc.insertAdjacentHTML('beforeend',
+    `<line class="corr-trend" x1="60" y1="300" x2="300" y2="60" stroke="var(--orange)" stroke-width="2.5" stroke-dasharray="6 4" opacity="0"/>`);
+  // correlation badge
+  sc.insertAdjacentHTML('beforeend',
+    `<g class="corr-badge" opacity="0" transform="translate(180, 365)">
+      <rect x="-70" y="-15" width="140" height="30" rx="15" fill="#fff" stroke="var(--orange)" stroke-width="2"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central" style="font-family:'JetBrains Mono';font-size:12px;font-weight:700;fill:var(--orange)" id="corr-badge-text">corr ≈ +0.92</text>
+     </g>`);
+
+  // right: 4x4 correlation heatmap
+  const cols = ['temp', 'ice-cream', 'heater', 'age'];
+  // ordered: temp(0), ice-cream(1), heater(2), age(3)
+  // temp x ice-cream = +0.92, temp x heater = -0.88, temp x age = 0.02
+  const corrMatrix = [
+    [1, 0.92, -0.88, 0.02],
+    [0.92, 1, -0.79, 0.05],
+    [-0.88, -0.79, 1, -0.03],
+    [0.02, 0.05, -0.03, 1]
+  ];
+  function corrColor(v) {
+    if (v > 0.7) return '#D54221';
+    if (v > 0.4) return '#E87A2E';
+    if (v > 0.15) return '#F5C089';
+    if (v > -0.15) return '#FFF5E6';
+    if (v > -0.4) return '#A6CCEF';
+    if (v > -0.7) return '#4F95D6';
+    return '#1C5DA8';
+  }
+  function corrTextColor(v) {
+    return Math.abs(v) > 0.5 ? '#fff' : 'var(--navy)';
+  }
+  const cellSize = 56, mxStart = 410;
+  // column headers
+  cols.forEach((c, i) => {
+    mx.insertAdjacentHTML('beforeend',
+      `<text class="axis-text corr-mat-h" x="${mxStart + 80 + i*cellSize + cellSize/2}" y="78" text-anchor="middle" style="font-weight:700;font-size:10px" opacity="0">${c}</text>`);
+  });
+  // row labels + cells
+  cols.forEach((rc, ri) => {
+    mx.insertAdjacentHTML('beforeend',
+      `<text class="axis-text corr-mat-r" x="${mxStart + 75}" y="${90 + ri*cellSize + cellSize/2}" text-anchor="end" dominant-baseline="central" style="font-weight:700;font-size:10px" opacity="0">${rc}</text>`);
+    cols.forEach((cc, ci) => {
+      const v = corrMatrix[ri][ci];
+      mx.insertAdjacentHTML('beforeend',
+        `<rect class="corr-mat-c" data-ri="${ri}" data-ci="${ci}" x="${mxStart + 80 + ci*cellSize + 2}" y="${90 + ri*cellSize + 2}" width="${cellSize - 4}" height="${cellSize - 4}" rx="5" fill="${corrColor(v)}" stroke="#fff" stroke-width="2" opacity="0"/>
+         <text class="corr-mat-t" data-ri="${ri}" data-ci="${ci}" x="${mxStart + 80 + ci*cellSize + cellSize/2}" y="${90 + ri*cellSize + cellSize/2}" text-anchor="middle" dominant-baseline="central" style="font-family:'JetBrains Mono';font-size:12px;font-weight:700;fill:${corrTextColor(v)}" opacity="0">${v.toFixed(2)}</text>`);
+    });
+  });
+}
+buildCorr();
+makeStepper('corr', 5, (step, cap) => {
+  document.querySelectorAll('.corr-dot').forEach(d => d.style.opacity = 0);
+  document.querySelector('.corr-trend').style.opacity = 0;
+  document.querySelector('.corr-badge').style.opacity = 0;
+  document.getElementById('corr-matrix').style.opacity = 0;
+  document.querySelectorAll('.corr-mat-c, .corr-mat-t, .corr-mat-h, .corr-mat-r').forEach(e => e.style.opacity = 0);
+
+  if (step === 0) {
+    cap.innerHTML = '<strong>Positive correlation</strong>: temperature ↑, ice-cream sales ↑. Dots rise from bottom-left to top-right.';
+    document.querySelectorAll('.corr-dot.pos').forEach((d, i) => setTimeout(() => d.style.opacity = 0.85, i * 30));
+    document.querySelector('.corr-trend').setAttribute('x1', 60);
+    document.querySelector('.corr-trend').setAttribute('y1', 300);
+    document.querySelector('.corr-trend').setAttribute('x2', 300);
+    document.querySelector('.corr-trend').setAttribute('y2', 60);
+    document.querySelector('.corr-trend').setAttribute('stroke', 'var(--orange)');
+    setTimeout(() => document.querySelector('.corr-trend').style.opacity = 1, 600);
+    document.getElementById('corr-badge-text').textContent = 'corr ≈ +0.92';
+    document.getElementById('corr-badge-text').setAttribute('fill', 'var(--orange)');
+    document.querySelector('.corr-badge rect').setAttribute('stroke', 'var(--orange)');
+    setTimeout(() => document.querySelector('.corr-badge').style.opacity = 1, 800);
+  } else if (step === 1) {
+    cap.innerHTML = '<strong>Negative correlation</strong>: temperature ↑, heater sales ↓. Dots fall from top-left to bottom-right.';
+    document.querySelectorAll('.corr-dot.neg').forEach((d, i) => setTimeout(() => d.style.opacity = 0.85, i * 30));
+    document.querySelector('.corr-trend').setAttribute('x1', 60);
+    document.querySelector('.corr-trend').setAttribute('y1', 60);
+    document.querySelector('.corr-trend').setAttribute('x2', 300);
+    document.querySelector('.corr-trend').setAttribute('y2', 300);
+    document.querySelector('.corr-trend').setAttribute('stroke', 'var(--blue)');
+    setTimeout(() => document.querySelector('.corr-trend').style.opacity = 1, 600);
+    document.getElementById('corr-badge-text').textContent = 'corr ≈ −0.88';
+    document.getElementById('corr-badge-text').setAttribute('fill', 'var(--blue)');
+    document.querySelector('.corr-badge rect').setAttribute('stroke', 'var(--blue)');
+    setTimeout(() => document.querySelector('.corr-badge').style.opacity = 1, 800);
+  } else if (step === 2) {
+    cap.innerHTML = '<strong>No correlation</strong>: ice-cream sales vs a person\'s age. Dots are a cloud — no pattern. The score is near zero.';
+    document.querySelectorAll('.corr-dot.zero').forEach((d, i) => setTimeout(() => d.style.opacity = 0.85, i * 30));
+    document.getElementById('corr-badge-text').textContent = 'corr ≈ +0.02';
+    document.getElementById('corr-badge-text').setAttribute('fill', 'var(--text-muted)');
+    document.querySelector('.corr-badge rect').setAttribute('stroke', 'var(--text-muted)');
+    setTimeout(() => document.querySelector('.corr-badge').style.opacity = 1, 600);
+  } else if (step === 3) {
+    cap.innerHTML = 'Now do this for <strong>every pair of columns</strong> in your data. Stack the scores into a square: that\'s the matrix.';
+    document.getElementById('corr-matrix').style.opacity = 1;
+    document.querySelectorAll('.corr-mat-h, .corr-mat-r').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 50));
+    document.querySelectorAll('.corr-mat-c, .corr-mat-t').forEach((e, i) => setTimeout(() => e.style.opacity = 1, 300 + i * 40));
+  } else if (step === 4) {
+    cap.innerHTML = '<strong>Read it like a heatmap:</strong> deep orange = strong positive, deep blue = strong negative, pale cream = no link. Find the deepest colours — that\'s where your interesting relationships live.';
+    document.getElementById('corr-matrix').style.opacity = 1;
+    document.querySelectorAll('.corr-mat-h, .corr-mat-r').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.corr-mat-c, .corr-mat-t').forEach(e => e.style.opacity = 1);
+    // pulse strong cells
+    [[0,1],[1,0],[0,2],[2,0],[1,2],[2,1]].forEach(([r, c]) => {
+      const cell = document.querySelector(`.corr-mat-c[data-ri="${r}"][data-ci="${c}"]`);
+      cell.style.animation = 'pulse 1.5s infinite';
+    });
+  }
+});
+function resetCorr() { for (let i = 0; i < 5; i++) document.getElementById('corr-prev').click(); }
+
+/* ════════════════════════════════════════════════════════════
+   5. PAIR PLOTS — grid of scatter / histograms
+   ════════════════════════════════════════════════════════════ */
+const flowerCols = ['sepal_len', 'petal_len', 'petal_wid'];
+// Build a flower-like dataset: 3 clusters of 3 features
+function makeFlowerData(n, c1, c2, c3) {
+  return Array.from({length: n}, () => ({
+    sepal_len: c1 + gaussian() * 0.4,
+    petal_len: c2 + gaussian() * 0.45,
+    petal_wid: c3 + gaussian() * 0.25,
+  }));
+}
+const flowerData = [
+  ...makeFlowerData(25, 5, 1.5, 0.3),   // species A — small petals
+  ...makeFlowerData(25, 6, 4, 1.3),     // species B — medium
+  ...makeFlowerData(25, 6.5, 5.5, 2)    // species C — large
+];
+const speciesColors = ['var(--orange)', 'var(--green)', 'var(--blue)'];
+
+function buildPair() {
+  const g = document.getElementById('pair-grid');
+  g.innerHTML = '';
+  const cellSize = 130, padding = 8, startX = 90, startY = 30;
+  // axis labels and column titles
+  flowerCols.forEach((c, i) => {
+    g.insertAdjacentHTML('beforeend',
+      `<text class="axis-text" x="${startX + i*cellSize + cellSize/2}" y="${startY - 10}" text-anchor="middle" style="font-weight:700">${c}</text>
+       <text class="axis-text" x="${startX - 12}" y="${startY + i*cellSize + cellSize/2}" text-anchor="end" dominant-baseline="central" style="font-weight:700">${c}</text>`);
+  });
+  // grid cells: 3x3
+  for (let ri = 0; ri < 3; ri++) {
+    for (let ci = 0; ci < 3; ci++) {
+      const cx = startX + ci * cellSize;
+      const cy = startY + ri * cellSize;
+      g.insertAdjacentHTML('beforeend',
+        `<rect class="pair-cell" data-ri="${ri}" data-ci="${ci}" x="${cx}" y="${cy}" width="${cellSize - padding}" height="${cellSize - padding}" rx="6" fill="#fff" stroke="var(--border)" stroke-width="1.5" opacity="0"/>`);
+      if (ri === ci) {
+        // diagonal: simple histogram of that variable
+        // compute bins
+        const col = flowerCols[ri];
+        const allVals = flowerData.map(d => d[col]);
+        const mn = Math.min(...allVals), mx = Math.max(...allVals);
+        const nbins = 5;
+        const bins = new Array(nbins).fill(0);
+        allVals.forEach(v => {
+          const b = Math.min(nbins - 1, Math.floor((v - mn) / (mx - mn) * nbins));
+          bins[b]++;
+        });
+        const maxC = Math.max(...bins);
+        const innerW = cellSize - padding - 16, innerH = cellSize - padding - 16, x0 = cx + 8, y0 = cy + 8;
+        bins.forEach((c, bi) => {
+          const bx = x0 + bi * (innerW / nbins);
+          const bh = (c / maxC) * (innerH - 6);
+          g.insertAdjacentHTML('beforeend',
+            `<rect class="pair-hist" data-ri="${ri}" data-ci="${ci}" x="${bx + 2}" y="${y0 + innerH - bh}" width="${innerW / nbins - 4}" height="${bh}" rx="2" fill="var(--orange)" opacity="0"/>`);
+        });
+      } else {
+        // scatter cell
+        const colX = flowerCols[ci], colY = flowerCols[ri];
+        const xs = flowerData.map(d => d[colX]);
+        const ys = flowerData.map(d => d[colY]);
+        const xn = Math.min(...xs), xx = Math.max(...xs), yn = Math.min(...ys), yx = Math.max(...ys);
+        const innerW = cellSize - padding - 14, innerH = cellSize - padding - 14, x0 = cx + 7, y0 = cy + 7;
+        flowerData.forEach((d, di) => {
+          const px = x0 + ((d[colX] - xn) / (xx - xn)) * innerW;
+          const py = y0 + innerH - ((d[colY] - yn) / (yx - yn)) * innerH;
+          const species = Math.floor(di / 25);
+          g.insertAdjacentHTML('beforeend',
+            `<circle class="pair-dot" data-ri="${ri}" data-ci="${ci}" data-sp="${species}" cx="${px}" cy="${py}" r="2.4" fill="${speciesColors[species]}" opacity="0"/>`);
+        });
+      }
+    }
+  }
+  // species legend (drawn but hidden)
+  const legendY = 420;
+  ['Species A', 'Species B', 'Species C'].forEach((s, i) => {
+    g.insertAdjacentHTML('beforeend',
+      `<g class="pair-legend" opacity="0">
+        <circle cx="${130 + i*150}" cy="${legendY}" r="5" fill="${speciesColors[i]}"/>
+        <text class="axis-text" x="${145 + i*150}" y="${legendY + 4}" style="font-weight:600">${s}</text>
+       </g>`);
+  });
+}
+buildPair();
+makeStepper('pair', 4, (step, cap) => {
+  document.querySelectorAll('.pair-cell, .pair-hist, .pair-dot, .pair-legend').forEach(e => e.style.opacity = 0);
+  document.getElementById('pair-highlight').style.opacity = 0;
+
+  if (step === 0) {
+    cap.innerHTML = 'A flower dataset with 3 measurements per flower. We\'ll make one scatter plot for every <strong>pair</strong>, plus a histogram on the diagonal.';
+    document.querySelectorAll('.pair-cell').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 60));
+  } else if (step === 1) {
+    cap.innerHTML = '<strong>The diagonal</strong> shows each column\'s own distribution — like 3 mini-histograms saying "what shape is each variable?"';
+    document.querySelectorAll('.pair-cell').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.pair-hist').forEach((e, i) => setTimeout(() => e.style.opacity = 0.85, i * 80));
+    // highlight diagonal
+    const hl = document.getElementById('pair-highlight');
+    hl.querySelector('rect').setAttribute('x', 90);
+    hl.querySelector('rect').setAttribute('y', 30);
+    hl.querySelector('rect').setAttribute('width', 122 * 3 + 8);
+    hl.querySelector('rect').setAttribute('height', 122 * 3 + 8);
+    hl.querySelector('rect').setAttribute('stroke', 'none');
+    // overlay 3 dashed boxes
+    [0,1,2].forEach(i => {
+      hl.insertAdjacentHTML('beforeend',
+        `<rect class="hl-d" x="${90 + i*130 - 2}" y="${30 + i*130 - 2}" width="126" height="126" rx="6" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-dasharray="6 4"/>`);
+    });
+    hl.style.opacity = 1;
+  } else if (step === 2) {
+    cap.innerHTML = '<strong>The off-diagonal cells</strong> are scatter plots — each shows one column against another. Watch the dots land in each cell.';
+    document.querySelectorAll('.hl-d').forEach(e => e.remove());
+    document.querySelectorAll('.pair-cell').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.pair-hist').forEach(e => e.style.opacity = 0.45);
+    document.querySelectorAll('.pair-dot').forEach((e, i) => setTimeout(() => e.style.opacity = 0.85, i * 8));
+  } else if (step === 3) {
+    cap.innerHTML = '<strong>Colour by species</strong> and the story jumps out — three distinct clusters. In the petal-length vs petal-width cell, the species form clean groups.';
+    document.querySelectorAll('.hl-d').forEach(e => e.remove());
+    document.querySelectorAll('.pair-cell').forEach(e => e.style.opacity = 1);
+    document.querySelectorAll('.pair-hist').forEach(e => e.style.opacity = 0.45);
+    document.querySelectorAll('.pair-dot').forEach(e => e.style.opacity = 0.9);
+    document.querySelectorAll('.pair-legend').forEach((e, i) => setTimeout(() => e.style.opacity = 1, i * 200));
+    // highlight petal_len vs petal_wid (ri=2, ci=1 OR ri=1, ci=2)
+    const hl = document.getElementById('pair-highlight');
+    hl.querySelector('rect').setAttribute('x', 90 + 1*130 - 2);
+    hl.querySelector('rect').setAttribute('y', 30 + 2*130 - 2);
+    hl.querySelector('rect').setAttribute('width', 126);
+    hl.querySelector('rect').setAttribute('height', 126);
+    hl.querySelector('rect').setAttribute('stroke', 'var(--orange)');
+    hl.style.opacity = 1;
+  }
+});
+function resetPair() { for (let i = 0; i < 4; i++) document.getElementById('pair-prev').click(); }
+
+</script>
+</body>
+</html>

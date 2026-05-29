@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Storytelling · MokshPath</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);--navy:#2B2D42;--navy-dark:#1A1B2E;--bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;--text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;--border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--purple:#7C5AC2;--red:#E74C3C;--shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);--radius:14px;--radius-sm:8px}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+.nav{position:sticky;top:0;z-index:100;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm)}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo-icon{width:42px;height:42px}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.15}
+.nav-logo-name{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--navy)}
+.nav-logo-name span{color:var(--orange)}
+.nav-logo-tag{font-size:.62rem;color:var(--text-muted);font-weight:500;letter-spacing:.02em}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+.brand-mark{position:fixed;top:80px;right:24px;width:72px;height:auto;z-index:50;opacity:.92;filter:drop-shadow(0 6px 18px rgba(232,122,46,0.25));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.hero{padding:4rem 2rem 2.5rem;text-align:center;position:relative}
+.hero-inner{max-width:920px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem 1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.3)}}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.13;color:var(--navy);margin-bottom:1rem}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.02rem;color:var(--text-secondary);line-height:1.7;max-width:600px;margin:0 auto 1.6rem}
+.hero-toc{display:inline-flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1rem}
+.hero-toc a{padding:.4rem .9rem;border-radius:50px;background:var(--bg-card);border:1px solid var(--border);font-size:.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .2s}
+.hero-toc a:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+
+.section{padding:3rem 2rem;border-top:1px solid var(--border)}
+.section:nth-of-type(odd){background:var(--bg-light)}
+.container{max-width:1080px;margin:0 auto}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:var(--orange);color:#fff;font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:.8rem;box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.sec-num.n2{background:#E8A040}
+.sec-num.n3{background:var(--purple)}
+.sec-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);margin-bottom:.4rem;line-height:1.2}
+.sec-intro{font-size:.95rem;color:var(--text-secondary);max-width:680px;line-height:1.7;margin-bottom:1.6rem}
+
+.analogy{background:linear-gradient(135deg,var(--orange-glow),rgba(232,122,46,0.04));border:1px solid rgba(232,122,46,0.2);border-left:4px solid var(--orange);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;gap:.85rem;align-items:flex-start}
+.analogy-icon{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.analogy-body{flex:1}
+.analogy-label{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.analogy-text{font-size:.9rem;color:var(--text-primary);line-height:1.55}
+
+.stage{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stage-svg{width:100%;height:auto;display:block;max-height:460px}
+
+.controls{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px dashed var(--border);flex-wrap:wrap}
+.control-info{flex:1;min-width:200px}
+.control-step{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem}
+.control-caption{font-size:.92rem;color:var(--text-primary);font-weight:500;line-height:1.45}
+.control-btns{display:flex;gap:.5rem;flex-shrink:0}
+.ctrl{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.ctrl-prev{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-prev:hover:not(:disabled){background:var(--bg-light);color:var(--navy)}
+.ctrl-prev:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-next{background:var(--orange);color:#fff}
+.ctrl-next:hover:not(:disabled){background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.ctrl-next:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-replay{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-replay:hover{background:var(--bg-light);color:var(--navy)}
+
+.step-dots{display:flex;gap:.4rem;margin-top:.8rem;justify-content:center}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s}
+.step-dot.active{background:var(--orange);transform:scale(1.3)}
+.step-dot.done{background:var(--green)}
+
+.axis-line{stroke:var(--border);stroke-width:1.5}
+.axis-text{font-family:'Plus Jakarta Sans';font-size:11px;fill:var(--text-muted);font-weight:600}
+.axis-title{font-family:'Plus Jakarta Sans';font-size:12px;fill:var(--navy);font-weight:700}
+.fade{transition:opacity .5s ease}
+
+.takeaway{background:var(--navy-dark);color:#fff;border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-top:1.2rem;display:flex;gap:.85rem;align-items:flex-start}
+.takeaway-icon{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.takeaway-label{font-size:.7rem;font-weight:700;color:var(--orange-light);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem}
+.takeaway-text{font-size:.88rem;line-height:1.55;color:rgba(255,255,255,0.85)}
+
+footer{background:var(--bg-card);border-top:1px solid var(--border);padding:1.6rem 2rem;text-align:center;margin-top:2rem}
+.footer-copy{font-size:.78rem;color:var(--text-muted)}
+.footer-nav{display:flex;justify-content:center;gap:1rem;margin-top:.6rem;flex-wrap:wrap}
+.footer-nav a{font-size:.78rem;color:var(--orange);text-decoration:none;font-weight:600}
+
+@media(max-width:720px){
+  .brand-mark{width:48px;top:72px;right:12px}
+  .section{padding:2.2rem 1.2rem}
+  .hero{padding:3rem 1.2rem 2rem}
+  .nav{padding:0 1rem}
+  .nav-logo-tag{display:none}
+  .controls{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-icon" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="14" r="6" fill="#E87A2E"/><path d="M21 20c-6 0-10 3-10 7 0 2 1 3 2 4l2-3c1-1.5 2.5-2 3-2h6c.5 0 2 .5 3 2l2 3c1-1 2-2 2-4 0-4-4-7-10-7z" fill="#E87A2E"/><path d="M11 31c0 0 2 4 10 4s10-4 10-4" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="21" cy="38" rx="8" ry="2" fill="#E87A2E" opacity=".15"/><path d="M8 27l-3 2m29-2l3 2" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><circle cx="21" cy="14" r="3" fill="#FFF" opacity=".3"/></svg>
+    <div class="nav-logo-text"><span class="nav-logo-name">Moksh<span>Path</span></span><span class="nav-logo-tag">Guided Path to True Learning</span></div>
+  </a>
+  <div class="nav-right">
+    <span class="nav-pill"><span style="width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block"></span>Lesson 4 of 4</span>
+  </div>
+</nav>
+
+<img src="hero.svg" alt="MokshPath" class="brand-mark">
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Data Storytelling</div>
+    <h1>A chart that <em>doesn't tell a story</em> is just decoration</h1>
+    <p class="hero-sub">A finding only matters if someone <strong>understands and acts on it</strong>. Data storytelling is the craft of guiding a viewer's eye, naming the surprise out loud, and giving them somewhere to go next. Three pieces: annotated charts, a narrative arc, and what you say in the room.</p>
+    <nav class="hero-toc">
+      <a href="#annot">Annotated charts</a>
+      <a href="#arc">Narrative arc</a>
+      <a href="#present">What to say</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────── 1. ANNOTATED VISUALISATIONS ─────────── -->
+<section class="section" id="annot">
+  <div class="container">
+    <div class="sec-num">1</div>
+    <h2 class="sec-title">Annotated visualisations — guide the eye, name the point</h2>
+    <p class="sec-intro">A plain chart asks: <em>"figure it out yourself"</em>. An annotated chart says: <em>"here is what to look at, and here is why it matters."</em> Same data, very different impact. Watch one chart grow from raw bars into a story.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🗺️</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">A blank map and a guided tour both cover the same city. The map drops you in and wishes you luck. The guide says <em>"see that building? That's where the story is."</em> Annotations turn your chart into the guide.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="annot-svg" viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- title -->
+        <text id="annot-title" x="360" y="36" text-anchor="middle" style="font-family:'DM Serif Display';font-size:18px;font-weight:700;fill:var(--navy)" opacity="0">Sales dropped 38% on Wednesday after the system outage</text>
+        <text id="annot-sub" x="360" y="56" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:500;fill:var(--text-secondary)" opacity="0">Daily revenue · week of March 10–16, 2025</text>
+        <!-- axes -->
+        <line x1="80" y1="320" x2="660" y2="320" class="axis-line"/>
+        <line x1="80" y1="100" x2="80" y2="320" class="axis-line"/>
+        <!-- y-axis label & ticks -->
+        <g id="annot-ylabels" opacity="0">
+          <text class="axis-title" x="32" y="200" transform="rotate(-90,32,200)" text-anchor="middle">Revenue (₹ lakhs)</text>
+          <text class="axis-text" x="73" y="324" text-anchor="end">0</text>
+          <text class="axis-text" x="73" y="270" text-anchor="end">25</text>
+          <text class="axis-text" x="73" y="216" text-anchor="end">50</text>
+          <text class="axis-text" x="73" y="162" text-anchor="end">75</text>
+          <text class="axis-text" x="73" y="108" text-anchor="end">100</text>
+        </g>
+        <!-- x-axis labels (days) -->
+        <g id="annot-xlabels"></g>
+        <!-- bars -->
+        <g id="annot-bars"></g>
+        <!-- callout for Wed dip -->
+        <g id="annot-callout" opacity="0">
+          <path d="M 360 175 L 440 130 L 600 130" stroke="var(--red)" stroke-width="2" fill="none"/>
+          <circle cx="360" cy="175" r="5" fill="var(--red)"/>
+          <rect x="450" y="100" width="200" height="56" rx="8" fill="var(--red)" opacity=".95"/>
+          <text x="550" y="122" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:#fff">System outage 11:00–14:00</text>
+          <text x="550" y="142" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:500;fill:rgba(255,255,255,0.9)">Checkout fully unavailable for 3 hours</text>
+        </g>
+        <!-- recovery callout -->
+        <g id="annot-recover" opacity="0">
+          <path d="M 540 192 L 520 360" stroke="var(--green)" stroke-width="2" stroke-dasharray="4 3" fill="none"/>
+          <text x="520" y="378" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--green)">Back to normal by Friday ✓</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="annot-step">Step 1 of 6</div>
+          <div class="control-caption" id="annot-cap">Step 0: just bars. No title, no labels. The viewer sees seven mystery rectangles and must guess what they mean.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="annot-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetAnnot()">↺</button>
+          <button class="ctrl ctrl-next" id="annot-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="annot-dots-prog"></div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Rule of thumb</div>
+        <div class="takeaway-text">Every chart you ship to humans should answer three questions <em>before</em> they ask: <strong>what is this, what should I notice, and why does it matter?</strong> Title, highlight, callout — in that order.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 2. EDA NARRATIVE STRUCTURE ─────────── -->
+<section class="section" id="arc">
+  <div class="container">
+    <div class="sec-num n2">2</div>
+    <h2 class="sec-title">EDA narrative — the five-beat story arc</h2>
+    <p class="sec-intro">Random charts in random order = a noisy report. A good EDA writeup follows a story: <strong>Question → Data → Exploration → Finding → Action</strong>. Each stage earns the next one. The viewer never has to ask "why are you showing me this?"</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🎬</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Think of a mystery film. <em>Setup</em> (something is wrong) → <em>investigation</em> (clues) → <em>twist</em> (the unexpected finding) → <em>resolution</em> (what we do now). Skip any beat and the audience checks their phone. EDA reports work the same way.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="arc-svg" viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- background connecting curve -->
+        <path id="arc-path" d="M 80 280 Q 200 280, 220 200 T 360 200 T 500 200 Q 620 200, 640 280" stroke="var(--border)" stroke-width="3" fill="none" stroke-dasharray="4 4"/>
+        <!-- 5 nodes: Question, Data, Exploration, Finding, Action -->
+        <g id="arc-nodes"></g>
+        <!-- detail card (changes per step) -->
+        <g id="arc-detail" opacity="0">
+          <rect id="arc-detail-bg" x="100" y="310" width="520" height="80" rx="10" fill="var(--bg-light)" stroke="var(--orange)" stroke-width="2"/>
+          <text id="arc-detail-label" x="120" y="335" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--orange);text-transform:uppercase;letter-spacing:.06em"></text>
+          <text id="arc-detail-text" x="120" y="358" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:600;fill:var(--navy)"></text>
+          <text id="arc-detail-tip" x="120" y="378" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:500;fill:var(--text-secondary);font-style:italic"></text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="arc-step">Step 1 of 6</div>
+          <div class="control-caption" id="arc-cap">The full arc: five beats your report should hit, in this order. Click Next to walk through each beat.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="arc-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetArc()">↺</button>
+          <button class="ctrl ctrl-next" id="arc-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="arc-dots-prog"></div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Test it on yourself</div>
+        <div class="takeaway-text">Before sharing an EDA report, read it as a stranger would. Can you point at <em>one sentence</em> for each beat? If "Action" is missing, you have an analysis, not a story.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 3. WHAT TO SAY IN A PRESENTATION ─────────── -->
+<section class="section" id="present">
+  <div class="container">
+    <div class="sec-num n3">3</div>
+    <h2 class="sec-title">What to say — when the slide is up and the room is quiet</h2>
+    <p class="sec-intro">Your slide is the picture. <strong>You</strong> are the soundtrack. The same chart can land as a yawn or a "what?!" depending on the first sentence out of your mouth. Five small habits make all the difference.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🎤</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">A radio host doesn't just play a song and leave. They <em>introduce it</em> ("you'll want to hear this one"), play it, then say <em>what it meant</em>. Your slides need the same bookends.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="pres-svg" viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+        <!-- the "slide" frame -->
+        <rect x="60" y="40" width="380" height="240" rx="10" fill="var(--bg-light)" stroke="var(--border)" stroke-width="2"/>
+        <text x="80" y="70" style="font-family:'DM Serif Display';font-size:17px;fill:var(--navy)" id="pres-slide-title">Wednesday sales fell 38%</text>
+        <!-- mini bar chart inside the slide -->
+        <g id="pres-mini-bars">
+          <rect x="90"  y="180" width="34" height="70" fill="var(--orange)" opacity=".7"/>
+          <rect x="135" y="170" width="34" height="80" fill="var(--orange)" opacity=".7"/>
+          <rect x="180" y="160" width="34" height="90" fill="var(--orange)" opacity=".7"/>
+          <rect x="225" y="220" width="34" height="30" fill="var(--red)"/>
+          <rect x="270" y="200" width="34" height="50" fill="var(--orange)" opacity=".7"/>
+          <rect x="315" y="170" width="34" height="80" fill="var(--orange)" opacity=".7"/>
+          <rect x="360" y="160" width="34" height="90" fill="var(--orange)" opacity=".7"/>
+          <line x1="80" y1="250" x2="400" y2="250" stroke="var(--text-muted)" stroke-width="1.5"/>
+          <text x="107" y="265" text-anchor="middle" class="axis-text">Mon</text>
+          <text x="152" y="265" text-anchor="middle" class="axis-text">Tue</text>
+          <text x="197" y="265" text-anchor="middle" class="axis-text">Wed</text>
+          <text x="242" y="265" text-anchor="middle" class="axis-text" style="fill:var(--red);font-weight:800">Wed</text>
+          <text x="287" y="265" text-anchor="middle" class="axis-text">Thu</text>
+          <text x="332" y="265" text-anchor="middle" class="axis-text">Fri</text>
+          <text x="377" y="265" text-anchor="middle" class="axis-text">Sat</text>
+        </g>
+        <!-- the presenter avatar -->
+        <g id="pres-avatar" transform="translate(540 120)">
+          <circle cx="0" cy="0" r="36" fill="var(--orange)"/>
+          <circle cx="0" cy="-8" r="13" fill="#fff" opacity=".95"/>
+          <path d="M -18 18 Q 0 6, 18 18 L 18 28 L -18 28 Z" fill="#fff" opacity=".95"/>
+          <!-- mic -->
+          <rect x="22" y="-4" width="8" height="22" rx="4" fill="var(--navy-dark)"/>
+          <circle cx="26" cy="-6" r="6" fill="var(--navy-dark)"/>
+        </g>
+        <!-- speech bubble -->
+        <g id="pres-bubble" opacity="0">
+          <path d="M 480 200 Q 470 240, 460 270 L 480 380 Q 510 390, 580 390 L 690 390 Q 700 390, 700 380 L 700 280 Q 700 270, 690 270 L 500 270 Q 490 270, 490 260 Z"
+                fill="var(--navy-dark)" />
+          <text id="pres-bubble-label" x="500" y="295" style="font-family:'Plus Jakarta Sans';font-size:10px;font-weight:700;fill:var(--orange-light);text-transform:uppercase;letter-spacing:.06em">Habit 1</text>
+          <foreignObject x="500" y="305" width="190" height="80">
+            <div xmlns="http://www.w3.org/1999/xhtml" id="pres-bubble-text" style="font-family:'Plus Jakarta Sans';font-size:12px;line-height:1.4;color:#fff;font-weight:500"></div>
+          </foreignObject>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="pres-step">Step 1 of 6</div>
+          <div class="control-caption" id="pres-cap">Here's your slide. The chart is on screen, the room is quiet, all eyes on you. Click Next for the five habits, one at a time.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="pres-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetPres()">↺</button>
+          <button class="ctrl ctrl-next" id="pres-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="pres-dots-prog"></div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">One more thing</div>
+        <div class="takeaway-text">Practice the first 10 seconds of every slide out loud. If you can't say it cleanly, the slide isn't ready — and no amount of polish on the chart will save you.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">© MokshPath · Guided Path to True Learning</div>
+  <div class="footer-nav">
+    <a href="03-feature-engineering.html">◀ Lesson 3: Feature Engineering</a>
+    <a href="01-python-review.html">Back to Lesson 1 ▶</a>
+  </div>
+</footer>
+
+<script>
+/* ============ generic stepper helper ============ */
+function makeStepper(prefix, totalSteps, stepFn){
+  let i = 0;
+  const prev = document.getElementById(prefix+'-prev');
+  const next = document.getElementById(prefix+'-next');
+  const stepEl = document.getElementById(prefix+'-step');
+  const dotsProg = document.getElementById(prefix+'-dots-prog');
+  dotsProg.innerHTML = '';
+  for(let k=0;k<totalSteps;k++){
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (k===0?' active':'');
+    dotsProg.appendChild(d);
+  }
+  function render(){
+    stepEl.textContent = `Step ${i+1} of ${totalSteps}`;
+    prev.disabled = i===0;
+    next.disabled = i===totalSteps-1;
+    [...dotsProg.children].forEach((d,k)=>{
+      d.classList.remove('active','done');
+      if(k<i) d.classList.add('done');
+      else if(k===i) d.classList.add('active');
+    });
+    stepFn(i);
+  }
+  prev.onclick = ()=>{ if(i>0){ i--; render(); } };
+  next.onclick = ()=>{ if(i<totalSteps-1){ i++; render(); } };
+  render();
+  return { reset: ()=>{ i=0; render(); } };
+}
+
+/* ============ 1. ANNOTATED CHART ============ */
+const annotData = [
+  { day:'Mon', val:78 },
+  { day:'Tue', val:82 },
+  { day:'Wed', val:51 },  // dip!
+  { day:'Thu', val:69 },
+  { day:'Fri', val:85 },
+  { day:'Sat', val:91 },
+  { day:'Sun', val:74 },
+];
+const annotBars = document.getElementById('annot-bars');
+const annotXlabels = document.getElementById('annot-xlabels');
+const annotTitle = document.getElementById('annot-title');
+const annotSub = document.getElementById('annot-sub');
+const annotYlabels = document.getElementById('annot-ylabels');
+const annotCallout = document.getElementById('annot-callout');
+const annotRecover = document.getElementById('annot-recover');
+
+// build bars: width 60, gap 20, start x=110
+const barW = 60, barGap = 20;
+const annotBarX = (i)=> 110 + i*(barW+barGap);
+const annotBarY = (v)=> 320 - (v/100)*220;
+annotData.forEach((d,i)=>{
+  const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  r.setAttribute('id','annot-b-'+i);
+  r.setAttribute('x', annotBarX(i));
+  r.setAttribute('y', annotBarY(d.val));
+  r.setAttribute('width', barW);
+  r.setAttribute('height', 320 - annotBarY(d.val));
+  r.setAttribute('rx', 4);
+  r.setAttribute('fill', 'var(--text-muted)');
+  r.setAttribute('opacity', 0.55);
+  r.setAttribute('class','fade');
+  annotBars.appendChild(r);
+  // x label
+  const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('id','annot-xl-'+i);
+  t.setAttribute('x', annotBarX(i)+barW/2);
+  t.setAttribute('y', 340);
+  t.setAttribute('text-anchor','middle');
+  t.setAttribute('class','axis-text');
+  t.setAttribute('opacity', 0);
+  t.setAttribute('style','transition:opacity .4s');
+  t.textContent = d.day;
+  annotXlabels.appendChild(t);
+});
+
+const annotCaps = [
+  'Step 0: just bars. No title, no labels. The viewer sees seven mystery rectangles and must guess what they mean.',
+  'Add <strong>axis labels and tick values</strong>. Now we know it\'s revenue in lakhs, day-by-day. Useful — but still no message.',
+  'Add a <strong>title that says the finding</strong>: "Sales dropped 38% on Wednesday after the system outage." The viewer now knows what to look for.',
+  '<strong>Highlight the Wednesday bar in red</strong> and dim the others. The eye jumps to the dip in under a second.',
+  'Add a <strong>callout that explains why</strong>: "System outage 11:00–14:00 — checkout fully unavailable." Now the chart doesn\'t just show, it explains.',
+  'Add a <strong>resolution note</strong>: "Back to normal by Friday ✓". The viewer leaves reassured — and with the full story in one image.'
+];
+
+function annotStep(i){
+  // bars: all grey at step 0, full colour at step 1+; Wed becomes red at step 3+
+  for(let k=0;k<annotData.length;k++){
+    const b = document.getElementById('annot-b-'+k);
+    const isWed = k===2;
+    if(i===0){
+      b.setAttribute('fill','var(--text-muted)');
+      b.setAttribute('opacity', 0.55);
+    } else if(i<3){
+      b.setAttribute('fill','var(--orange)');
+      b.setAttribute('opacity', 0.85);
+    } else {
+      if(isWed){
+        b.setAttribute('fill','var(--red)');
+        b.setAttribute('opacity', 1);
+      } else {
+        b.setAttribute('fill','var(--orange)');
+        b.setAttribute('opacity', 0.4);
+      }
+    }
+    document.getElementById('annot-xl-'+k).setAttribute('opacity', i>=1 ? 1 : 0);
+  }
+  annotYlabels.setAttribute('opacity', i>=1 ? 1 : 0);
+  annotTitle.setAttribute('opacity', i>=2 ? 1 : 0);
+  annotSub.setAttribute('opacity', i>=2 ? 1 : 0);
+  annotCallout.setAttribute('opacity', i>=4 ? 1 : 0);
+  annotRecover.setAttribute('opacity', i>=5 ? 1 : 0);
+  document.getElementById('annot-cap').innerHTML = annotCaps[i];
+}
+const annotCtl = makeStepper('annot', 6, annotStep);
+function resetAnnot(){ annotCtl.reset(); }
+
+/* ============ 2. EDA NARRATIVE ARC ============ */
+const arcBeats = [
+  { label:'Question',    color:'var(--orange)', x: 80,  y: 280, icon:'❓', text:'Why did Q4 revenue fall in tier-2 cities?',  tip:'Start with one sentence the business cares about.' },
+  { label:'Data',        color:'#E8A040',       x: 220, y: 200, icon:'📦', text:'18 months of orders, ~2.1M rows, 4 cities.', tip:'Name the source, the period, the size. No more.' },
+  { label:'Exploration', color:'#66BB6A',       x: 360, y: 200, icon:'🔍', text:'Distribution by city, week-by-week trend.',   tip:'Show only the charts that drove your thinking.' },
+  { label:'Finding',     color:'var(--blue)',   x: 500, y: 200, icon:'💡', text:'Pune dropped 22% after a competitor opened.', tip:'One headline. One number. One sentence.' },
+  { label:'Action',      color:'var(--purple)', x: 640, y: 280, icon:'🎯', text:'Run a 4-week price test in Pune. Owner: Riya.', tip:'Always end with: what next, who owns it, when by.' },
+];
+const arcNodes = document.getElementById('arc-nodes');
+arcBeats.forEach((b,k)=>{
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id','arc-node-'+k);
+  g.setAttribute('opacity', 0.35);
+  g.setAttribute('style','transition:opacity .4s');
+  g.innerHTML = `
+    <circle cx="${b.x}" cy="${b.y}" r="36" fill="${b.color}" id="arc-circle-${k}"/>
+    <text x="${b.x}" y="${b.y+7}" text-anchor="middle" style="font-size:22px">${b.icon}</text>
+    <text x="${b.x}" y="${b.y+58}" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:${b.color}">${b.label}</text>
+  `;
+  arcNodes.appendChild(g);
+});
+const arcDetail = document.getElementById('arc-detail');
+const arcDetailBg = document.getElementById('arc-detail-bg');
+const arcDetailLabel = document.getElementById('arc-detail-label');
+const arcDetailText = document.getElementById('arc-detail-text');
+const arcDetailTip = document.getElementById('arc-detail-tip');
+
+const arcCaps = [
+  'The full arc: five beats your report should hit, in this order. Click Next to walk through each beat.',
+  'Beat 1 — <strong>Question</strong>. State the business problem first. Without it, every chart is orphaned.',
+  'Beat 2 — <strong>Data</strong>. Briefly: where it came from, when, how much. Earns the viewer\'s trust before any chart appears.',
+  'Beat 3 — <strong>Exploration</strong>. The charts you actually built. Show only the ones that changed your mind.',
+  'Beat 4 — <strong>Finding</strong>. The punchline. Single sentence, single number, in plain language.',
+  'Beat 5 — <strong>Action</strong>. So what? Who does what next, by when? Without this, the work won\'t move.'
+];
+
+function arcStep(i){
+  // light up nodes 0..i-1
+  arcBeats.forEach((b,k)=>{
+    const node = document.getElementById('arc-node-'+k);
+    node.setAttribute('opacity', (i===0 || k <= i-1) ? 1 : 0.3);
+  });
+  // detail card from step 1+
+  if(i===0){
+    arcDetail.setAttribute('opacity', 0);
+  } else {
+    const b = arcBeats[i-1];
+    arcDetail.setAttribute('opacity', 1);
+    arcDetailBg.setAttribute('stroke', b.color);
+    arcDetailLabel.setAttribute('style', `font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:${b.color};text-transform:uppercase;letter-spacing:.06em`);
+    arcDetailLabel.textContent = `Beat ${i} · ${b.label}`;
+    arcDetailText.textContent = b.text;
+    arcDetailTip.textContent = '“' + b.tip + '”';
+  }
+  document.getElementById('arc-cap').innerHTML = arcCaps[i];
+}
+const arcCtl = makeStepper('arc', 6, arcStep);
+function resetArc(){ arcCtl.reset(); }
+
+/* ============ 3. PRESENTATION HABITS ============ */
+const presHabits = [
+  { label:'Habit 1 · Lead with the headline', text:'"Wednesday sales fell 38% — and it was the outage." Say the finding in the first sentence. Don\'t make people wait.' },
+  { label:'Habit 2 · Point at the surprise',  text:'"Look at this red bar." Name what they should look at. Don\'t assume the highlight does the work for you.' },
+  { label:'Habit 3 · Give the cause',         text:'"Checkout was down 11–14:00." Pair the what with the why. A surprise without a cause feels like an accusation.' },
+  { label:'Habit 4 · Bound the damage',       text:'"We recovered by Friday." Tell them what isn\'t a problem any more. Fear shrinks the room\'s ability to think.' },
+  { label:'Habit 5 · End with the ask',       text:'"We want to add a status-page integration — need approval today." Slides don\'t close themselves. You do.' },
+];
+const presBubble = document.getElementById('pres-bubble');
+const presBubbleLabel = document.getElementById('pres-bubble-label');
+const presBubbleText = document.getElementById('pres-bubble-text');
+
+const presCaps = [
+  'Here\'s your slide. The chart is on screen, the room is quiet, all eyes on you. Click Next for the five habits, one at a time.',
+  presHabits[0].label + ' — say the finding immediately.',
+  presHabits[1].label + ' — direct their attention.',
+  presHabits[2].label + ' — pair surprise with cause.',
+  presHabits[3].label + ' — close the loop on damage.',
+  presHabits[4].label + ' — leave the room with a next step.'
+];
+
+function presStep(i){
+  if(i===0){
+    presBubble.setAttribute('opacity', 0);
+  } else {
+    presBubble.setAttribute('opacity', 1);
+    const h = presHabits[i-1];
+    presBubbleLabel.textContent = h.label.split(' · ')[0];
+    presBubbleText.innerHTML = h.text;
+  }
+  document.getElementById('pres-cap').innerHTML = presCaps[i];
+}
+const presCtl = makeStepper('pres', 6, presStep);
+function resetPres(){ presCtl.reset(); }
+</script>
+</body>
+</html>

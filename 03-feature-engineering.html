@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Engineering · MokshPath</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);--navy:#2B2D42;--navy-dark:#1A1B2E;--bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;--text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;--border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--purple:#7C5AC2;--red:#E74C3C;--shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);--radius:14px;--radius-sm:8px}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+.nav{position:sticky;top:0;z-index:100;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm)}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo-icon{width:42px;height:42px}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.15}
+.nav-logo-name{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--navy)}
+.nav-logo-name span{color:var(--orange)}
+.nav-logo-tag{font-size:.62rem;color:var(--text-muted);font-weight:500;letter-spacing:.02em}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+.brand-mark{position:fixed;top:80px;right:24px;width:72px;height:auto;z-index:50;opacity:.92;filter:drop-shadow(0 6px 18px rgba(232,122,46,0.25));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.hero{padding:4rem 2rem 2.5rem;text-align:center;position:relative}
+.hero-inner{max-width:920px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem 1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.3)}}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.13;color:var(--navy);margin-bottom:1rem}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.02rem;color:var(--text-secondary);line-height:1.7;max-width:600px;margin:0 auto 1.6rem}
+.hero-toc{display:inline-flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1rem}
+.hero-toc a{padding:.4rem .9rem;border-radius:50px;background:var(--bg-card);border:1px solid var(--border);font-size:.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .2s}
+.hero-toc a:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+
+.section{padding:3rem 2rem;border-top:1px solid var(--border)}
+.section:nth-of-type(odd){background:var(--bg-light)}
+.container{max-width:1080px;margin:0 auto}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:var(--orange);color:#fff;font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:.8rem;box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.sec-num.n2{background:#E8A040}
+.sec-num.n3{background:#66BB6A}
+.sec-num.n4{background:var(--blue)}
+.sec-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);margin-bottom:.4rem;line-height:1.2}
+.sec-intro{font-size:.95rem;color:var(--text-secondary);max-width:680px;line-height:1.7;margin-bottom:1.6rem}
+
+.analogy{background:linear-gradient(135deg,var(--orange-glow),rgba(232,122,46,0.04));border:1px solid rgba(232,122,46,0.2);border-left:4px solid var(--orange);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;gap:.85rem;align-items:flex-start}
+.analogy-icon{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.analogy-body{flex:1}
+.analogy-label{font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.analogy-text{font-size:.9rem;color:var(--text-primary);line-height:1.55}
+
+.stage{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stage-svg{width:100%;height:auto;display:block;max-height:460px}
+
+.controls{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px dashed var(--border);flex-wrap:wrap}
+.control-info{flex:1;min-width:200px}
+.control-step{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem}
+.control-caption{font-size:.92rem;color:var(--text-primary);font-weight:500;line-height:1.45}
+.control-btns{display:flex;gap:.5rem;flex-shrink:0}
+.ctrl{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.ctrl-prev{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-prev:hover:not(:disabled){background:var(--bg-light);color:var(--navy)}
+.ctrl-prev:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-next{background:var(--orange);color:#fff}
+.ctrl-next:hover:not(:disabled){background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.ctrl-next:disabled{opacity:.4;cursor:not-allowed}
+.ctrl-replay{background:var(--bg);color:var(--text-secondary);border:1px solid var(--border)}
+.ctrl-replay:hover{background:var(--bg-light);color:var(--navy)}
+
+.code-block{background:var(--navy-dark);color:#e8e8e8;border-radius:var(--radius-sm);padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.6;margin-top:1.2rem;overflow-x:auto}
+.code-block .kw{color:#F5943E}.code-block .str{color:#A5D6A7}.code-block .com{color:#8B8E9E;font-style:italic}.code-block .fn{color:#90CAF9}.code-block .num{color:#FFCC80}
+
+.step-dots{display:flex;gap:.4rem;margin-top:.8rem;justify-content:center}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s}
+.step-dot.active{background:var(--orange);transform:scale(1.3)}
+.step-dot.done{background:var(--green)}
+
+.cell-anim{transition:all .55s cubic-bezier(.4,0,.2,1)}
+.axis-line{stroke:var(--border);stroke-width:1.5}
+.axis-text{font-family:'Plus Jakarta Sans';font-size:11px;fill:var(--text-muted);font-weight:600}
+.axis-title{font-family:'Plus Jakarta Sans';font-size:12px;fill:var(--navy);font-weight:700}
+
+.takeaway{background:var(--navy-dark);color:#fff;border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-top:1.2rem;display:flex;gap:.85rem;align-items:flex-start}
+.takeaway-icon{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.takeaway-label{font-size:.7rem;font-weight:700;color:var(--orange-light);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem}
+.takeaway-text{font-size:.88rem;line-height:1.55;color:rgba(255,255,255,0.85)}
+
+footer{background:var(--bg-card);border-top:1px solid var(--border);padding:1.6rem 2rem;text-align:center;margin-top:2rem}
+.footer-copy{font-size:.78rem;color:var(--text-muted)}
+.footer-nav{display:flex;justify-content:center;gap:1rem;margin-top:.6rem;flex-wrap:wrap}
+.footer-nav a{font-size:.78rem;color:var(--orange);text-decoration:none;font-weight:600}
+
+@media(max-width:720px){
+  .brand-mark{width:48px;top:72px;right:12px}
+  .section{padding:2.2rem 1.2rem}
+  .hero{padding:3rem 1.2rem 2rem}
+  .nav{padding:0 1rem}
+  .nav-logo-tag{display:none}
+  .controls{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-icon" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="14" r="6" fill="#E87A2E"/><path d="M21 20c-6 0-10 3-10 7 0 2 1 3 2 4l2-3c1-1.5 2.5-2 3-2h6c.5 0 2 .5 3 2l2 3c1-1 2-2 2-4 0-4-4-7-10-7z" fill="#E87A2E"/><path d="M11 31c0 0 2 4 10 4s10-4 10-4" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="21" cy="38" rx="8" ry="2" fill="#E87A2E" opacity=".15"/><path d="M8 27l-3 2m29-2l3 2" stroke="#E87A2E" stroke-width="1.5" stroke-linecap="round"/><circle cx="21" cy="14" r="3" fill="#FFF" opacity=".3"/></svg>
+    <div class="nav-logo-text"><span class="nav-logo-name">Moksh<span>Path</span></span><span class="nav-logo-tag">Guided Path to True Learning</span></div>
+  </a>
+  <div class="nav-right">
+    <span class="nav-pill"><span style="width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block"></span>Lesson 3 of 4</span>
+  </div>
+</nav>
+
+<img src="hero.svg" alt="MokshPath" class="brand-mark">
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Feature Engineering</div>
+    <h1>Reshape raw data into <em>signals your model can read</em></h1>
+    <p class="hero-sub">Models can't read calendars, can't remember yesterday, and can't tell that "Mumbai" and "Delhi" are different things. <strong>Feature engineering</strong> is how we translate raw columns into numbers a model finds useful — one careful transformation at a time.</p>
+    <nav class="hero-toc">
+      <a href="#lag">Lag features</a>
+      <a href="#roll">Rolling averages</a>
+      <a href="#date">Date-time split</a>
+      <a href="#ohe">One-hot encoding</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────── 1. LAG FEATURES ─────────── -->
+<section class="section" id="lag">
+  <div class="container">
+    <div class="sec-num">1</div>
+    <h2 class="sec-title">Lag features — letting the model peek at yesterday</h2>
+    <p class="sec-intro">A model sees rows one at a time. By default, it has <em>no memory</em>. If you want it to learn "today's sales depend on yesterday's sales", you must <strong>copy yesterday's value into today's row</strong> — that's a lag feature.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">📞</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Imagine asking a friend "how busy is the shop today?" — but they can only see <em>right now</em>. To help them spot a trend, you whisper yesterday's answer in their ear before they look. That whisper is a lag feature: <strong>past value, glued onto the present row</strong>.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="lag-svg" viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+        <!-- column header: Date | Sales | Sales_lag1 -->
+        <g id="lag-headers">
+          <rect x="90" y="40" width="140" height="36" fill="var(--navy-dark)" rx="6"/>
+          <text x="160" y="62" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:700;fill:#fff">Date</text>
+          <rect x="240" y="40" width="140" height="36" fill="var(--navy-dark)" rx="6"/>
+          <text x="310" y="62" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:700;fill:#fff">Sales</text>
+          <rect id="lag-h3" x="390" y="40" width="170" height="36" fill="var(--orange)" rx="6" opacity="0"/>
+          <text id="lag-h3t" x="475" y="62" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:700;fill:#fff" opacity="0">Sales_lag1</text>
+        </g>
+        <!-- 6 rows -->
+        <g id="lag-rows"></g>
+        <!-- arrow pool for shift -->
+        <g id="lag-arrows"></g>
+        <!-- highlight -->
+        <g id="lag-hl" opacity="0">
+          <rect x="395" y="86" width="160" height="36" fill="none" stroke="var(--red)" stroke-width="2" stroke-dasharray="4 3" rx="4"/>
+          <text x="570" y="108" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--red)">NaN — no "yesterday"</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="lag-step">Step 1 of 4</div>
+          <div class="control-caption" id="lag-cap">Here is a tiny daily-sales table: 6 days, 6 numbers. The model can't see across rows.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="lag-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetLag()">↺</button>
+          <button class="ctrl ctrl-next" id="lag-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="lag-dots-prog"></div>
+    </div>
+
+    <div class="code-block">
+<span class="com"># pandas one-liner</span>
+df[<span class="str">'Sales_lag1'</span>] = df[<span class="str">'Sales'</span>].<span class="fn">shift</span>(<span class="num">1</span>)
+<span class="com"># shift(2) → 2 days ago, shift(7) → same day last week, etc.</span>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Why it matters</div>
+        <div class="takeaway-text">Almost every time-series model — sales, demand, energy, stock — relies on lag features. They turn "memory" into a column the model can multiply.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 2. ROLLING AVERAGES ─────────── -->
+<section class="section" id="roll">
+  <div class="container">
+    <div class="sec-num n2">2</div>
+    <h2 class="sec-title">Rolling averages — smoothing the noise out</h2>
+    <p class="sec-intro">Raw daily data is jagged. A <strong>rolling average</strong> slides a small window across the series and replaces each point with the average of its neighbours. The bumps soften; the trend appears.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🧹</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Think of running a finger over a wrinkled tablecloth: the wrinkles flatten, the table's <em>real shape</em> emerges. A rolling mean does the same with daily noise — the underlying trend stops hiding behind the wiggles.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="roll-svg" viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+        <!-- axes -->
+        <line x1="50" y1="320" x2="690" y2="320" class="axis-line"/>
+        <line x1="50" y1="40" x2="50" y2="320" class="axis-line"/>
+        <text class="axis-title" x="370" y="358" text-anchor="middle">Day</text>
+        <text class="axis-title" x="20" y="180" transform="rotate(-90,20,180)" text-anchor="middle">Sales</text>
+        <!-- raw line + dots -->
+        <polyline id="roll-raw-line" points="" fill="none" stroke="var(--text-muted)" stroke-width="1.5" opacity=".55"/>
+        <g id="roll-raw-dots"></g>
+        <!-- window box -->
+        <rect id="roll-window" x="0" y="0" width="0" height="0" fill="var(--orange-glow)" stroke="var(--orange)" stroke-width="2" stroke-dasharray="4 3" rx="4" opacity="0"/>
+        <!-- smoothed line + dots -->
+        <polyline id="roll-smooth-line" points="" fill="none" stroke="var(--orange)" stroke-width="3" opacity="0"/>
+        <g id="roll-smooth-dots"></g>
+        <!-- callouts -->
+        <text id="roll-label-raw" x="600" y="60" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--text-muted)" opacity="0">raw (jagged)</text>
+        <text id="roll-label-smooth" x="600" y="80" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--orange)" opacity="0">3-day mean (smooth)</text>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="roll-step">Step 1 of 4</div>
+          <div class="control-caption" id="roll-cap">A noisy daily-sales series. Every day jumps a bit — hard to read a trend off this.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="roll-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetRoll()">↺</button>
+          <button class="ctrl ctrl-next" id="roll-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="roll-dots-prog"></div>
+    </div>
+
+    <div class="code-block">
+<span class="com"># window=3 → average of today + previous 2 days</span>
+df[<span class="str">'Sales_ma3'</span>] = df[<span class="str">'Sales'</span>].<span class="fn">rolling</span>(window=<span class="num">3</span>).<span class="fn">mean</span>()
+<span class="com"># Also: .sum(), .std(), .max() — same trick, different summary</span>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Why it matters</div>
+        <div class="takeaway-text">Rolling features capture <em>recent momentum</em> without overreacting to a single weird day. They're the second-most-used trick in any time-series toolkit, right after lag features.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 3. DATE-TIME DECOMPOSITION ─────────── -->
+<section class="section" id="date">
+  <div class="container">
+    <div class="sec-num n3">3</div>
+    <h2 class="sec-title">Date-time decomposition — unpacking a timestamp</h2>
+    <p class="sec-intro">"2025-03-14 09:00" is one column to you, but to a model it's a meaningless string. <strong>Split it</strong> into year, month, day-of-week, hour — and suddenly the model can learn "Mondays are quiet" or "December spikes".</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">📅</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">A timestamp is like a sealed envelope. Inside are useful clues: <em>which season, which weekday, which hour of the day</em>. The model can't peek inside on its own — you have to open the envelope and lay each clue on the table as its own column.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="date-svg" viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- original timestamp pill -->
+        <rect id="date-orig" x="240" y="40" width="240" height="48" rx="10" fill="var(--navy-dark)"/>
+        <text id="date-orig-t" x="360" y="70" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:14px;font-weight:600;fill:#fff">2025-03-14 09:30</text>
+        <text x="360" y="105" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:600;fill:var(--text-muted)">one column: "timestamp"</text>
+        <!-- arrows fanning down -->
+        <g id="date-arrows"></g>
+        <!-- 5 derived feature pills: year, month, day, weekday, hour -->
+        <g id="date-pills"></g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="date-step">Step 1 of 6</div>
+          <div class="control-caption" id="date-cap">A single timestamp column. Useless to a tree-based model as-is — it's just a string of digits.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="date-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetDate()">↺</button>
+          <button class="ctrl ctrl-next" id="date-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="date-dots-prog"></div>
+    </div>
+
+    <div class="code-block">
+df[<span class="str">'ts'</span>] = pd.<span class="fn">to_datetime</span>(df[<span class="str">'ts'</span>])
+df[<span class="str">'year'</span>]    = df[<span class="str">'ts'</span>].dt.year
+df[<span class="str">'month'</span>]   = df[<span class="str">'ts'</span>].dt.month
+df[<span class="str">'day'</span>]     = df[<span class="str">'ts'</span>].dt.day
+df[<span class="str">'weekday'</span>] = df[<span class="str">'ts'</span>].dt.dayofweek  <span class="com"># 0=Mon</span>
+df[<span class="str">'hour'</span>]    = df[<span class="str">'ts'</span>].dt.hour
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Why it matters</div>
+        <div class="takeaway-text">Cyclical patterns — weekends, paydays, holiday seasons, evening peaks — only become learnable when you expose them as separate columns. Decomposition is almost free, and almost always worth it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 4. ONE-HOT ENCODING ─────────── -->
+<section class="section" id="ohe">
+  <div class="container">
+    <div class="sec-num n4">4</div>
+    <h2 class="sec-title">One-hot encoding — turning categories into numbers</h2>
+    <p class="sec-intro">A column like <code style="background:var(--bg-light);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono';font-size:.85em">city = "Mumbai"</code> is a word, not a number. Most models can't multiply words. <strong>One-hot encoding</strong> replaces a single categorical column with one yes/no column per category.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🗳️</div>
+      <div class="analogy-body">
+        <div class="analogy-label">Real-life analogy</div>
+        <div class="analogy-text">Think of a checkbox form: instead of writing your city in a blank, you tick <strong>one</strong> box from "□ Mumbai · □ Pune · □ Delhi". For each row, exactly one box is ticked (1) and the rest are blank (0). That's one-hot encoding — and it's exactly what the model wants to see.</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <svg class="stage-svg" id="ohe-svg" viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- left: original column -->
+        <text x="120" y="34" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--text-muted)">BEFORE</text>
+        <rect x="55" y="48" width="130" height="36" fill="var(--navy-dark)" rx="6"/>
+        <text x="120" y="70" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:700;fill:#fff">city</text>
+        <g id="ohe-left"></g>
+        <!-- arrow -->
+        <g id="ohe-arrow" opacity="0">
+          <path d="M 200 200 L 280 200" stroke="var(--orange)" stroke-width="3" marker-end="url(#oheArr)"/>
+          <text x="240" y="190" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:var(--orange)">encode</text>
+        </g>
+        <defs>
+          <marker id="oheArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--orange)"/></marker>
+        </defs>
+        <!-- right: 3 one-hot columns -->
+        <text x="500" y="34" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:var(--text-muted)" id="ohe-right-label" opacity="0">AFTER</text>
+        <g id="ohe-right-headers" opacity="0">
+          <rect x="305" y="48" width="120" height="36" fill="var(--orange)" rx="6"/>
+          <text x="365" y="70" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:#fff">city_Mumbai</text>
+          <rect x="430" y="48" width="120" height="36" fill="#E8A040" rx="6"/>
+          <text x="490" y="70" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:#fff">city_Pune</text>
+          <rect x="555" y="48" width="120" height="36" fill="#66BB6A" rx="6"/>
+          <text x="615" y="70" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:12px;font-weight:700;fill:#fff">city_Delhi</text>
+        </g>
+        <g id="ohe-right"></g>
+      </svg>
+      <div class="controls">
+        <div class="control-info">
+          <div class="control-step" id="ohe-step">Step 1 of 5</div>
+          <div class="control-caption" id="ohe-cap">A single column with 5 rows: each row holds a city name. The model sees strings and gives up.</div>
+        </div>
+        <div class="control-btns">
+          <button class="ctrl ctrl-prev" id="ohe-prev" disabled>◀ Prev</button>
+          <button class="ctrl ctrl-replay" onclick="resetOhe()">↺</button>
+          <button class="ctrl ctrl-next" id="ohe-next">Next ▶</button>
+        </div>
+      </div>
+      <div class="step-dots" id="ohe-dots-prog"></div>
+    </div>
+
+    <div class="code-block">
+<span class="com"># pandas does this in one call</span>
+df_encoded = pd.<span class="fn">get_dummies</span>(df, columns=[<span class="str">'city'</span>])
+<span class="com"># scikit-learn equivalent: OneHotEncoder()</span>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-icon">💡</div>
+      <div>
+        <div class="takeaway-label">Why it matters</div>
+        <div class="takeaway-text">Any column of text categories (city, product, payment-type, channel) usually needs encoding before it enters a model. For very high-cardinality columns (1000+ categories), look at target encoding or embeddings instead — one-hot would explode.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">© MokshPath · Guided Path to True Learning</div>
+  <div class="footer-nav">
+    <a href="02-eda.html">◀ Lesson 2: EDA</a>
+    <a href="04-data-storytelling.html">Lesson 4: Data Storytelling ▶</a>
+  </div>
+</footer>
+
+<script>
+/* ============ generic stepper helper ============ */
+function makeStepper(prefix, totalSteps, stepFn){
+  let i = 0;
+  const prev = document.getElementById(prefix+'-prev');
+  const next = document.getElementById(prefix+'-next');
+  const stepEl = document.getElementById(prefix+'-step');
+  const dotsProg = document.getElementById(prefix+'-dots-prog');
+  // build dots
+  dotsProg.innerHTML = '';
+  for(let k=0;k<totalSteps;k++){
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (k===0?' active':'');
+    dotsProg.appendChild(d);
+  }
+  function render(){
+    stepEl.textContent = `Step ${i+1} of ${totalSteps}`;
+    prev.disabled = i===0;
+    next.disabled = i===totalSteps-1;
+    [...dotsProg.children].forEach((d,k)=>{
+      d.classList.remove('active','done');
+      if(k<i) d.classList.add('done');
+      else if(k===i) d.classList.add('active');
+    });
+    stepFn(i);
+  }
+  prev.onclick = ()=>{ if(i>0){ i--; render(); } };
+  next.onclick = ()=>{ if(i<totalSteps-1){ i++; render(); } };
+  render();
+  return { reset: ()=>{ i=0; render(); }, goto:(n)=>{ i=n; render(); } };
+}
+
+/* ============ 1. LAG FEATURES ============ */
+const lagData = [
+  { date:'Mar 01', sales: 42 },
+  { date:'Mar 02', sales: 55 },
+  { date:'Mar 03', sales: 48 },
+  { date:'Mar 04', sales: 61 },
+  { date:'Mar 05', sales: 58 },
+  { date:'Mar 06', sales: 67 },
+];
+const lagRows = document.getElementById('lag-rows');
+const lagArrows = document.getElementById('lag-arrows');
+const lagH3 = document.getElementById('lag-h3');
+const lagH3t = document.getElementById('lag-h3t');
+const lagHl = document.getElementById('lag-hl');
+
+// build the static rows
+lagData.forEach((r,k)=>{
+  const y = 90 + k*36;
+  // date cell
+  const c1 = document.createElementNS('http://www.w3.org/2000/svg','g');
+  c1.innerHTML = `<rect x="90" y="${y}" width="140" height="32" fill="var(--bg-card)" stroke="var(--border)" rx="4"/>
+    <text x="160" y="${y+21}" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:12px;fill:var(--text-primary)">${r.date}</text>`;
+  lagRows.appendChild(c1);
+  // sales cell
+  const c2 = document.createElementNS('http://www.w3.org/2000/svg','g');
+  c2.innerHTML = `<rect id="lag-s-${k}" x="240" y="${y}" width="140" height="32" fill="var(--orange-glow)" stroke="var(--orange)" rx="4"/>
+    <text id="lag-st-${k}" x="310" y="${y+21}" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:13px;font-weight:600;fill:var(--orange-dark)">${r.sales}</text>`;
+  lagRows.appendChild(c2);
+  // lag1 cell (empty initially)
+  const c3 = document.createElementNS('http://www.w3.org/2000/svg','g');
+  c3.innerHTML = `<rect id="lag-l-${k}" x="395" y="${y}" width="160" height="32" fill="var(--bg-card)" stroke="var(--border)" stroke-dasharray="3 3" rx="4" opacity="0"/>
+    <text id="lag-lt-${k}" x="475" y="${y+21}" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:13px;font-weight:600;fill:var(--orange-dark)" opacity="0"></text>`;
+  lagRows.appendChild(c3);
+});
+
+const lagCaps = [
+  'Here is a tiny daily-sales table: 6 days, 6 numbers. The model can\'t see across rows.',
+  'We add a new column on the right: <strong>Sales_lag1</strong>. Empty for now — we\'ll fill it next.',
+  'Each value gets <strong>shifted down by 1 row</strong>: today\'s Sales becomes tomorrow\'s Sales_lag1. The arrows show the move.',
+  'Row 1 has no "yesterday" — so its lag value is <strong>NaN</strong>. Always handle that (drop the row, or fill with 0).'
+];
+
+function lagStep(i){
+  // header
+  lagH3.style.opacity = i>=1 ? 1 : 0;
+  lagH3t.style.opacity = i>=1 ? 1 : 0;
+  // arrows + lag cells
+  lagArrows.innerHTML = '';
+  for(let k=0;k<lagData.length;k++){
+    const sBox = document.getElementById('lag-l-'+k);
+    const sTxt = document.getElementById('lag-lt-'+k);
+    if(i>=1){ sBox.setAttribute('opacity', 0.4); }
+    else    { sBox.setAttribute('opacity', 0); sTxt.setAttribute('opacity', 0); sTxt.textContent=''; }
+    if(i>=2){
+      sBox.setAttribute('opacity', 1);
+      if(k===0){ sTxt.textContent = 'NaN'; sTxt.setAttribute('opacity', .55); sTxt.setAttribute('style', sTxt.getAttribute('style').replace(/fill:[^;]+/, 'fill:var(--red)')); }
+      else { sTxt.textContent = lagData[k-1].sales; sTxt.setAttribute('opacity', 1); }
+      // draw arrow from row k-1 sales to row k lag (only when k>=1)
+      if(k>=1){
+        const y1 = 90 + (k-1)*36 + 16;
+        const y2 = 90 + k*36 + 16;
+        const arr = document.createElementNS('http://www.w3.org/2000/svg','path');
+        arr.setAttribute('d', `M 385 ${y1} Q 393 ${(y1+y2)/2}, 395 ${y2}`);
+        arr.setAttribute('fill','none');
+        arr.setAttribute('stroke','var(--orange)');
+        arr.setAttribute('stroke-width','2');
+        arr.setAttribute('opacity','.55');
+        arr.setAttribute('marker-end','url(#lagArr)');
+        lagArrows.appendChild(arr);
+      }
+    }
+  }
+  lagHl.setAttribute('opacity', i>=3 ? 1 : 0);
+  document.getElementById('lag-cap').innerHTML = lagCaps[i];
+}
+// add marker for arrows
+{
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `<marker id="lagArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--orange)"/></marker>`;
+  document.getElementById('lag-svg').appendChild(defs);
+}
+const lagCtl = makeStepper('lag', 4, lagStep);
+function resetLag(){ lagCtl.reset(); }
+
+/* ============ 2. ROLLING AVERAGES ============ */
+const rollSeries = [42, 58, 49, 67, 55, 72, 64, 81, 74, 88, 79, 95, 86, 102];
+const rollX = (i)=> 70 + i*45;
+const rollY = (v)=> 320 - (v-30)*3;
+const rollRawLine = document.getElementById('roll-raw-line');
+const rollRawDots = document.getElementById('roll-raw-dots');
+const rollWindow = document.getElementById('roll-window');
+const rollSmoothLine = document.getElementById('roll-smooth-line');
+const rollSmoothDots = document.getElementById('roll-smooth-dots');
+const rollLabelRaw = document.getElementById('roll-label-raw');
+const rollLabelSmooth = document.getElementById('roll-label-smooth');
+
+// pre-build raw points
+rollRawLine.setAttribute('points', rollSeries.map((v,i)=>`${rollX(i)},${rollY(v)}`).join(' '));
+rollSeries.forEach((v,i)=>{
+  const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx', rollX(i)); c.setAttribute('cy', rollY(v));
+  c.setAttribute('r', 4); c.setAttribute('fill', 'var(--text-muted)');
+  c.setAttribute('opacity', '.7');
+  rollRawDots.appendChild(c);
+});
+
+// compute 3-day rolling means
+const rollMeans = rollSeries.map((_,i)=>{
+  if(i<2) return null;
+  return (rollSeries[i] + rollSeries[i-1] + rollSeries[i-2])/3;
+});
+
+const rollCaps = [
+  'A noisy daily-sales series. Every day jumps a bit — hard to read a trend off this.',
+  'We pick a window of <strong>3 days</strong>. The orange box covers days 1–3.',
+  'Average those 3 values → place that one number at the right edge of the window. Slide the window forward by 1 day, repeat.',
+  'After sliding all the way, we get a <strong>smoothed line</strong> (orange). The trend is now obvious.'
+];
+
+function rollStep(i){
+  // raw always visible
+  rollRawDots.querySelectorAll('circle').forEach(c=>c.setAttribute('opacity', i===0 ? '.95' : '.55'));
+  rollLabelRaw.setAttribute('opacity', i>=1 ? 1 : 0);
+  rollLabelSmooth.setAttribute('opacity', i>=2 ? 1 : 0);
+  // window
+  if(i===0){
+    rollWindow.setAttribute('opacity', 0);
+  } else if(i===1){
+    rollWindow.setAttribute('x', rollX(0)-12);
+    rollWindow.setAttribute('y', 50);
+    rollWindow.setAttribute('width', (rollX(2)-rollX(0))+24);
+    rollWindow.setAttribute('height', 270);
+    rollWindow.setAttribute('opacity', 1);
+  } else if(i===2){
+    // sliding animation: jump to middle position; we'll show the trail of smooth dots up to some idx
+    rollWindow.setAttribute('x', rollX(5)-12);
+    rollWindow.setAttribute('y', 50);
+    rollWindow.setAttribute('width', (rollX(7)-rollX(5))+24);
+    rollWindow.setAttribute('height', 270);
+    rollWindow.setAttribute('opacity', 1);
+  } else {
+    rollWindow.setAttribute('opacity', 0);
+  }
+  // smooth points - reveal progressively
+  rollSmoothDots.innerHTML = '';
+  let smoothPts = [];
+  let maxIdx = -1;
+  if(i===2) maxIdx = 7;
+  if(i===3) maxIdx = rollSeries.length - 1;
+  if(maxIdx >= 0){
+    for(let k=2;k<=maxIdx;k++){
+      if(rollMeans[k]==null) continue;
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', rollX(k)); c.setAttribute('cy', rollY(rollMeans[k]));
+      c.setAttribute('r', 5); c.setAttribute('fill', 'var(--orange)');
+      rollSmoothDots.appendChild(c);
+      smoothPts.push(`${rollX(k)},${rollY(rollMeans[k])}`);
+    }
+  }
+  rollSmoothLine.setAttribute('points', smoothPts.join(' '));
+  rollSmoothLine.setAttribute('opacity', smoothPts.length>1 ? 1 : 0);
+  document.getElementById('roll-cap').innerHTML = rollCaps[i];
+}
+const rollCtl = makeStepper('roll', 4, rollStep);
+function resetRoll(){ rollCtl.reset(); }
+
+/* ============ 3. DATE-TIME DECOMPOSITION ============ */
+const datePills = document.getElementById('date-pills');
+const dateArrows = document.getElementById('date-arrows');
+const dateFields = [
+  { label:'year',    value:'2025',    color:'var(--orange)',      x: 50  },
+  { label:'month',   value:'3',       color:'#E8A040',            x: 180 },
+  { label:'day',     value:'14',      color:'#66BB6A',            x: 310 },
+  { label:'weekday', value:'4 (Fri)', color:'var(--blue)',        x: 440 },
+  { label:'hour',    value:'9',       color:'var(--purple)',      x: 590 },
+];
+// pre-build pills (hidden)
+dateFields.forEach((f,k)=>{
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id', 'date-pill-'+k);
+  g.setAttribute('opacity', 0);
+  g.innerHTML = `
+    <rect x="${f.x}" y="240" width="90" height="42" rx="10" fill="${f.color}"/>
+    <text x="${f.x+45}" y="258" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:11px;font-weight:700;fill:rgba(255,255,255,0.85)">${f.label}</text>
+    <text x="${f.x+45}" y="275" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:13px;font-weight:700;fill:#fff">${f.value}</text>
+    <text x="${f.x+45}" y="305" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:10px;font-weight:600;fill:${f.color}">.dt.${f.label}</text>
+  `;
+  datePills.appendChild(g);
+});
+
+const dateCaps = [
+  'A single timestamp column. Useless to a tree-based model as-is — it\'s just a string of digits.',
+  'Open the envelope: extract the <strong>year</strong> as its own column. Now the model can learn long-term shifts.',
+  'Add <strong>month</strong>. The model can now see seasonal patterns (December rush, August lull).',
+  'Add <strong>day-of-month</strong> — useful for paydays, billing cycles, monthly rhythms.',
+  'Add <strong>weekday</strong> (0=Mon … 6=Sun). Weekend vs weekday is huge in retail, traffic, demand.',
+  'Add <strong>hour</strong>. Now intra-day patterns — morning rush, evening peak — are learnable.'
+];
+
+function dateStep(i){
+  // pills reveal one-by-one starting at step 1
+  dateArrows.innerHTML = '';
+  dateFields.forEach((f,k)=>{
+    const p = document.getElementById('date-pill-'+k);
+    if(i>=k+1){
+      p.setAttribute('opacity', 1);
+      // draw arrow from original pill (center ~360, y=88) down to pill
+      const arr = document.createElementNS('http://www.w3.org/2000/svg','path');
+      arr.setAttribute('d', `M 360 90 Q ${(360+f.x+45)/2} 180, ${f.x+45} 235`);
+      arr.setAttribute('fill','none');
+      arr.setAttribute('stroke', f.color);
+      arr.setAttribute('stroke-width','2');
+      arr.setAttribute('stroke-dasharray','4 3');
+      arr.setAttribute('opacity','.65');
+      arr.setAttribute('marker-end','url(#dateArr-'+k+')');
+      dateArrows.appendChild(arr);
+      // marker
+      const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+      defs.innerHTML = `<marker id="dateArr-${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${f.color}"/></marker>`;
+      dateArrows.appendChild(defs);
+    } else {
+      p.setAttribute('opacity', 0);
+    }
+  });
+  document.getElementById('date-cap').innerHTML = dateCaps[i];
+}
+const dateCtl = makeStepper('date', 6, dateStep);
+function resetDate(){ dateCtl.reset(); }
+
+/* ============ 4. ONE-HOT ENCODING ============ */
+const oheData = ['Mumbai','Pune','Delhi','Mumbai','Pune'];
+const oheCityColor = { Mumbai:'var(--orange)', Pune:'#E8A040', Delhi:'#66BB6A' };
+const oheLeft = document.getElementById('ohe-left');
+const oheRight = document.getElementById('ohe-right');
+const oheRightHeaders = document.getElementById('ohe-right-headers');
+const oheRightLabel = document.getElementById('ohe-right-label');
+const oheArrow = document.getElementById('ohe-arrow');
+
+// build left column rows
+oheData.forEach((city,k)=>{
+  const y = 96 + k*42;
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.innerHTML = `<rect x="55" y="${y}" width="130" height="34" fill="var(--bg-card)" stroke="${oheCityColor[city]}" stroke-width="2" rx="4"/>
+    <text x="120" y="${y+22}" text-anchor="middle" style="font-family:'Plus Jakarta Sans';font-size:13px;font-weight:700;fill:${oheCityColor[city]}">${city}</text>`;
+  oheLeft.appendChild(g);
+});
+
+// pre-build right cells (3 cols × 5 rows) — initially hidden
+const oheCells = []; // [row][col]
+for(let r=0;r<5;r++){
+  const row = [];
+  for(let c=0;c<3;c++){
+    const cities = ['Mumbai','Pune','Delhi'];
+    const x = 305 + c*125;
+    const y = 96 + r*42;
+    const isOne = oheData[r] === cities[c];
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('id', `ohe-c-${r}-${c}`);
+    g.setAttribute('opacity', 0);
+    g.innerHTML = `<rect x="${x}" y="${y}" width="120" height="34" fill="${isOne?oheCityColor[cities[c]]:'var(--bg-card)'}" stroke="${oheCityColor[cities[c]]}" stroke-width="${isOne?2:1.5}" rx="4" opacity="${isOne?'1':'.4'}"/>
+      <text x="${x+60}" y="${y+22}" text-anchor="middle" style="font-family:'JetBrains Mono';font-size:15px;font-weight:700;fill:${isOne?'#fff':oheCityColor[cities[c]]}">${isOne?'1':'0'}</text>`;
+    oheRight.appendChild(g);
+    row.push({ el: g, isOne });
+  }
+  oheCells.push(row);
+}
+
+const oheCaps = [
+  'A single column with 5 rows: each row holds a city name. The model sees strings and gives up.',
+  'We will create <strong>one new column per category</strong>: city_Mumbai, city_Pune, city_Delhi.',
+  'For row 1 (Mumbai): tick city_Mumbai = <strong>1</strong>, the others stay 0.',
+  'Repeat for every row — each row has <strong>exactly one 1</strong>, rest are 0. (That\'s the "one-hot" part.)',
+  'Drop the original "city" column — the three new columns now carry the same info, but as pure numbers.'
+];
+
+function oheStep(i){
+  // headers + arrow appear at step 1
+  oheRightHeaders.setAttribute('opacity', i>=1 ? 1 : 0);
+  oheRightLabel.setAttribute('opacity', i>=1 ? 1 : 0);
+  oheArrow.setAttribute('opacity', i>=1 ? 1 : 0);
+  // cells: at step 2 only row 0 visible; at step 3 all rows visible; at step 4 original column fades
+  for(let r=0;r<5;r++){
+    for(let c=0;c<3;c++){
+      let show = false;
+      if(i===2 && r===0) show = true;
+      else if(i>=3) show = true;
+      oheCells[r][c].el.setAttribute('opacity', show ? 1 : 0);
+    }
+  }
+  // original column fade at step 4
+  oheLeft.setAttribute('opacity', i>=4 ? 0.25 : 1);
+  document.getElementById('ohe-cap').innerHTML = oheCaps[i];
+}
+const oheCtl = makeStepper('ohe', 5, oheStep);
+function resetOhe(){ oheCtl.reset(); }
+</script>
+</body>
+</html>
